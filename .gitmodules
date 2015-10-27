@@ -1,3 +1,0 @@
-[submodule "src/lib/MarkovNameGenerator"]
-	path = src/lib/MarkovNameGenerator
-	url = https://github.com/Tw1ddle/MarkovNameGenerator
