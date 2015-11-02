@@ -115,9 +115,6 @@ label {
 	margin-left: 10px; 
 	color: #999999; 
 }
-body {
-    text-align: center;
-}
 select {
     padding: 9px;
 	margin: 10px;
@@ -251,4 +248,8 @@ a:hover {
 	-webkit-column-width: 150px;
 	-moz-column-width: 150px;
 	column-width: 150px;
+}
+
+#header {
+    text-align: center;
 }

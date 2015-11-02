@@ -1,5 +1,7 @@
 package markov.namegen;
 
+import haxe.Serializer;
+import haxe.Unserializer;
 import markov.util.ArraySet;
 
 using markov.util.StringExtensions;
@@ -13,11 +15,17 @@ class Generator {
 	private var models:Array<Model>;
 	
 	/*
+	 * Construct a new, empty generator
+	 */
+	public function new() {
+	}
+	
+	/*
 	 * @param data - training data for the generator, array of words
 	 * @param order - number of models to use, will be of orders up to and including "order"
 	 * @param smoothing - the dirichlet prior/additive smoothing "randomness" factor
 	 */
-	public function new(data:Array<String>, order:Int, smoothing:Float) {
+	public function init(data:Array<String>, order:Int, smoothing:Float):Void {
 		Sure.sure(data != null);
 		Sure.sure(order >= 1);
 		
@@ -42,12 +50,14 @@ class Generator {
 			}
 			return 0;
 		});
-		var domain:Array<String> = letters.toArray();
-		domain.insert(0, "#");
+		var alphabet:Array<String> = letters.toArray();
+		alphabet.insert(0, "#");
 		
 		// Create models
 		for (i in 0...order) {
-			models.push(new Model(data.copy(), order - i, smoothing, domain));
+			var model = new Model();
+			model.init(data.copy(), i + 1, smoothing, alphabet);
+			models.push(model);
 		}
 	}
 	
@@ -81,5 +91,39 @@ class Generator {
 			}
 		}
 		return letter;
+	}
+	
+	public function serialize():String {
+		var serializer = new Serializer();
+		
+		serializer.serialize(order);
+		serializer.serialize(smoothing);
+		
+		for (model in models) {
+			var s = model.serialize();
+			serializer.serialize(s);
+		}
+		
+		return serializer.toString();
+	}
+	
+	public static function unserialize(s:String):Generator {
+		var unserializer = new Unserializer(s);
+		
+		var order = unserializer.unserialize();
+		var smoothing = unserializer.unserialize();
+		
+		var models = new Array<Model>();
+		while (unserializer.unserialize() != null) {
+			var model = unserializer.unserialize();
+			models.push(model);
+		}
+		
+		var generator = new Generator();
+		generator.order = order;
+		generator.smoothing = smoothing;
+		generator.models = models;
+		
+		return generator;
 	}
 }

@@ -1,6 +1,8 @@
 package markov.namegen;
 
 import haxe.ds.StringMap;
+import haxe.Serializer;
+import haxe.Unserializer;
 
 using markov.util.ArrayExtensions;
 using markov.util.StringExtensions;
@@ -14,16 +16,22 @@ class Model {
 	private var chains:StringMap<Array<Float>>;
 	
 	/*
+	 * Construct a new, empty model
+	 */
+	public function new() {
+	}
+	
+	/*
 	 * @param data - training data for the generator, array of words
 	 * @param order - number of models to use, will be of orders up to and including "order"
 	 * @params smoothing - the dirichlet prior/additive smoothing "randomness" factor
 	 * @params alphabet - the alphabet of the training data (array of all the symbols used in the training data)
 	 */
-	public function new(data:Array<String>, order:Int, smoothing:Float, alphabet:Array<String>) {
+	public function init(data:Array<String>, order:Int, smoothing:Float, alphabet:Array<String>):Void {
 		Sure.sure(alphabet != null && data != null);
 		Sure.sure(alphabet.length > 0 && data.length > 0);
 		Sure.sure(smoothing >= 0 && smoothing <= 1);
-		Sure.sure(order > 0);
+		Sure.sure(order >= 1);
 		
 		this.order = order;
 		this.smoothing = smoothing;
@@ -33,8 +41,8 @@ class Model {
 		train(data);
 		buildChains();
 		
-		//trace(observations.toString());
-		//trace(chains.toString());
+		trace(observations.toString());
+		trace(chains.toString());
 	}
 	
 	/*
@@ -140,5 +148,30 @@ class Model {
 		*/
 		
 		return 0;
+	}
+	
+	public function serialize():String {
+		var serializer = new Serializer();
+		serializer.serialize(order);
+		serializer.serialize(smoothing);
+		serializer.serialize(alphabet);
+		serializer.serialize(observations);
+		serializer.serialize(chains);
+		
+		trace(serializer.toString());
+		return serializer.toString();
+	}
+	
+	public static function unserialize(s:String):Model {
+		var unserializer = new Unserializer(s);
+		
+		var order = unserializer.unserialize();
+		var smoothing = unserializer.unserialize();
+		var alphabet = unserializer.unserialize();
+		var observations = unserializer.unserialize();
+		var chains = unserializer.unserialize();
+		
+		var model = new Model();
+		return model;
 	}
 }
