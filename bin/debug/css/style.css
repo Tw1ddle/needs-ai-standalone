@@ -81,7 +81,7 @@ img {
 
 .stitched {
 	padding: 20px;
-	margin: 10px;
+	margin: 30px;
 	background: #ffffff;
 	color: #000000;
 	font-size: 21px;
@@ -91,7 +91,6 @@ img {
 	border-radius: 10px;
 	box-shadow: 0 0 0 4px #ffffff, 2px 1px 6px 4px rgba(10, 10, 0, 0.5);
 	font-weight: normal;
-	display: inline-block;
 }
 
 input, textarea {
@@ -211,6 +210,13 @@ select {
 	height: auto;
 }
 
+#game {
+	width: 80%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 .container {
 	display: inline-block;
 	margin: 10px;
@@ -252,4 +258,25 @@ a:hover {
 
 #header {
     text-align: center;
+}
+
+#time {
+	margin-top: 30px;
+	display: inline-block;
+	width: auto;
+	text-align: center;
+}
+
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
 }

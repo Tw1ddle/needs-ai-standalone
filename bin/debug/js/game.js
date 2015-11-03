@@ -94,29 +94,101 @@ List.prototype = {
 	}
 	,__class__: List
 };
+var Location = function(tag,description) {
+	this.tag = tag;
+	this.description = description;
+	this.actions = [];
+};
+$hxClasses["Location"] = Location;
+Location.__name__ = ["Location"];
+Location.prototype = {
+	__class__: Location
+};
+var Desk = function() {
+	Location.call(this,"Desktop","The old rig, designed for a hacker on steroids");
+	this.actions.push(new Action(["computer"],2,[{ problem : 0, effect : function(world) {
+		terminal.insert("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
+	}}]));
+};
+$hxClasses["Desk"] = Desk;
+Desk.__name__ = ["Desk"];
+Desk.__super__ = Location;
+Desk.prototype = $extend(Location.prototype,{
+	__class__: Desk
+});
+var Fridge = function() {
+	Location.call(this,"Fridge","The new fridge");
+	this.actions.push(new Action(["eat"],2,[{ problem : 3, effect : function(world) {
+		terminal.insert("You shuffle to the fridge and grab the first thing you see.");
+	}}]));
+};
+$hxClasses["Fridge"] = Fridge;
+Fridge.__name__ = ["Fridge"];
+Fridge.__super__ = Location;
+Fridge.prototype = $extend(Location.prototype,{
+	__class__: Fridge
+});
+var Bed = function() {
+	Location.call(this,"Bed","The old bed");
+	this.actions.push(new Action(["sleep"],2,[{ problem : 2, effect : function(world) {
+		terminal.insert("You settle down for a night of rest.");
+	}}]));
+};
+$hxClasses["Bed"] = Bed;
+Bed.__name__ = ["Bed"];
+Bed.__super__ = Location;
+Bed.prototype = $extend(Location.prototype,{
+	__class__: Bed
+});
+var Shower = function() {
+	Location.call(this,"Shower","The shower.");
+	this.actions.push(new Action(["shower"],2,[{ problem : 4, effect : function(world) {
+		terminal.insert("You wash the filth off your body.");
+	}}]));
+};
+$hxClasses["Shower"] = Shower;
+Shower.__name__ = ["Shower"];
+Shower.__super__ = Location;
+Shower.prototype = $extend(Location.prototype,{
+	__class__: Shower
+});
+var Action = function(trigger,duration,effects) {
+	this.trigger = trigger;
+	this.duration = duration;
+	this.effects = effects;
+};
+$hxClasses["Action"] = Action;
+Action.__name__ = ["Action"];
+Action.prototype = {
+	__class__: Action
+};
+var Locations = function() { };
+$hxClasses["Locations"] = Locations;
+Locations.__name__ = ["Locations"];
 var World = function() {
 	this.livesRuined = 0;
 	this.feelingsHurt = 0;
-	this.minutes = 0;
 	this.date = new Date();
-	this.actor = new Actor();
+	this.minutes = 0;
+	this.actor = new Actor(this);
 	this.actions = [];
+	this.context = new haxe_ds_GenericStack();
 };
 $hxClasses["World"] = World;
 World.__name__ = ["World"];
 World.prototype = {
 	update: function(dt) {
-		this.date = DateTools.delta(this.date,this.minutes);
 		var _g = 0;
 		var _g1 = this.actions;
 		while(_g < _g1.length) {
 			var action = _g1[_g];
 			++_g;
+			this.minutes += action.duration;
 			this.actor.act(action);
 		}
+		this.date = DateTools.delta(this.date,this.minutes);
 		this.actions = [];
 		this.actor.think(dt);
-		this.actor.decide();
 	}
 	,__class__: World
 };
@@ -137,29 +209,28 @@ Motive.prototype = {
 	}
 	,__class__: Motive
 };
-var Action = function(duration,effects) {
-	this.duration = duration;
-	this.effects = effects;
-};
-$hxClasses["Action"] = Action;
-Action.__name__ = ["Action"];
-Action.prototype = {
-	__class__: Action
-};
-var Actor = function() {
+var Actor = function(world) {
+	this.world = world;
 	this.motives = [];
-	this.traits = [];
+	this.traits = new haxe_ds_IntMap();
 	this.experiences = [];
 	this.motives.push(new Motive(0,50,-1.0));
 	this.motives.push(new Motive(1,20,-1));
 	this.motives.push(new Motive(2,20,3));
 	this.motives.push(new Motive(3,50,2));
 	this.motives.push(new Motive(4,30,5));
+	this.motives.push(new Motive(5,5,-1));
 };
 $hxClasses["Actor"] = Actor;
 Actor.__name__ = ["Actor"];
 Actor.prototype = {
 	think: function(dt) {
+		var _g = 0;
+		var _g1 = this.experiences;
+		while(_g < _g1.length) {
+			var e = _g1[_g];
+			++_g;
+		}
 	}
 	,decide: function() {
 	}
@@ -171,6 +242,16 @@ Actor.prototype = {
 			++_g;
 			motive.update(action.duration);
 		}
+	}
+	,forceAction: function(action) {
+		var _g = 0;
+		var _g1 = action.effects;
+		while(_g < _g1.length) {
+			var effect = _g1[_g];
+			++_g;
+			effect.effect(this.world);
+		}
+		return true;
 	}
 	,__class__: Actor
 };
@@ -204,18 +285,47 @@ Main.main = function() {
 };
 Main.prototype = {
 	onWindowLoaded: function() {
+		var _g = this;
 		var len = localStorage.$length;
-		var _g = 0;
-		while(_g < len) {
-			var i = _g++;
+		var _g1 = 0;
+		while(_g1 < len) {
+			var i = _g1++;
 			var saveName = localStorage.key(i);
 		}
-		var g = new markov_namegen_Generator();
-		g.init(this.trainingData.get("us_forenames"),6,0.01);
+		this.clock = new FlipClock.Factory(window.document.getElementById("time"),{ });
 		this.world = new World();
-		window.document.addEventListener("console_log",function(e) {
-			console.log(e.detail.data);
-		});
+		this.world.context.add(Locations.desk);
+		this.world.context.add(Locations.bed);
+		this.world.context.add(Locations.fridge);
+		this.world.context.add(Locations.shower);
+		terminal.push(function(command,terminal) {
+			var $it0 = _g.world.context.iterator();
+			while( $it0.hasNext() ) {
+				var location = $it0.next();
+				var _g11 = 0;
+				var _g2 = location.actions;
+				while(_g11 < _g2.length) {
+					var action = _g2[_g11];
+					++_g11;
+					var containsParts = true;
+					var _g3 = 0;
+					var _g4 = action.trigger;
+					while(_g3 < _g4.length) {
+						var part = _g4[_g3];
+						++_g3;
+						if(!(command.indexOf(part) >= 0)) {
+							containsParts = false;
+							break;
+						}
+					}
+					if(action.trigger.length != 0 && containsParts) {
+						if(_g.world.actor.forceAction(action)) _g.clock.setTime(_g.clock.getTime() + 1);
+					}
+				}
+			}
+		},{ greetings : false, name : ">"});
+		terminal.insert("You have 24 hours...");
+		var tirednessGraph = new NeedGraph("Tiredness","#graphs",500,300);
 	}
 	,talk: function(type,topic,context) {
 		if(topic == null) topic = 0;
@@ -225,7 +335,40 @@ Main.prototype = {
 		if(topic == null) topic = 0;
 		return "I'm an enemy Tweet";
 	}
+	,generateActionButtons: function() {
+	}
 	,__class__: Main
+};
+var NeedGraph = function(title,elementId,width,height) {
+	this.title = title;
+	this.width = width;
+	this.height = height;
+	var x = d3.scale.linear().range([0,width]);
+	var y = d3.scale.linear().range([height,0]);
+	var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
+	var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
+	var valueLine = d3.svg.line().x(function(d) {
+		return d.time;
+	}).y(function(d1) {
+		return d1.value;
+	});
+	var svg = d3.select(elementId).append("svg").attr("width",width).attr("height",height).append("g");
+	console.log(svg);
+	var data = [{ time : 0, value : 20},{ time : 15, value : 40},{ time : 30, value : 10}];
+	var _g = 0;
+	while(_g < data.length) {
+		var d2 = data[_g];
+		++_g;
+	}
+	svg.append("g").attr("class","y axis").call(yAxis).append("text").attr("transform","rotate(-90)").attr("y",6).attr("dy",".71em").style("text-anchor","end").text(title);
+	svg.append("path").datum(data).attr("class","line").attr("d",valueLine);
+};
+$hxClasses["NeedGraph"] = NeedGraph;
+NeedGraph.__name__ = ["NeedGraph"];
+NeedGraph.prototype = {
+	updateData: function() {
+	}
+	,__class__: NeedGraph
 };
 Math.__name__ = ["Math"];
 var Reflect = function() { };
@@ -943,6 +1086,35 @@ haxe_Unserializer.prototype = {
 	}
 	,__class__: haxe_Unserializer
 };
+var haxe_ds_GenericCell = function(elt,next) {
+	this.elt = elt;
+	this.next = next;
+};
+$hxClasses["haxe.ds.GenericCell"] = haxe_ds_GenericCell;
+haxe_ds_GenericCell.__name__ = ["haxe","ds","GenericCell"];
+haxe_ds_GenericCell.prototype = {
+	__class__: haxe_ds_GenericCell
+};
+var haxe_ds_GenericStack = function() {
+};
+$hxClasses["haxe.ds.GenericStack"] = haxe_ds_GenericStack;
+haxe_ds_GenericStack.__name__ = ["haxe","ds","GenericStack"];
+haxe_ds_GenericStack.prototype = {
+	add: function(item) {
+		this.head = new haxe_ds_GenericCell(item,this.head);
+	}
+	,iterator: function() {
+		var l = this.head;
+		return { hasNext : function() {
+			return l != null;
+		}, next : function() {
+			var k = l;
+			l = k.next;
+			return k.elt;
+		}};
+	}
+	,__class__: haxe_ds_GenericStack
+};
 var haxe_ds_IntMap = function() {
 	this.h = { };
 };
@@ -1264,6 +1436,9 @@ js_Boot.__isNativeObj = function(o) {
 js_Boot.__resolveNativeClass = function(name) {
 	return $global[name];
 };
+var js_d3__$D3_InitPriority = function() { };
+$hxClasses["js.d3._D3.InitPriority"] = js_d3__$D3_InitPriority;
+js_d3__$D3_InitPriority.__name__ = ["js","d3","_D3","InitPriority"];
 var js_html_compat_ArrayBuffer = function(a) {
 	if((a instanceof Array) && a.__enum__ == null) {
 		this.a = a;
@@ -1896,6 +2071,10 @@ var ArrayBuffer = $global.ArrayBuffer || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = $global.DataView || js_html_compat_DataView;
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
+Locations.desk = new Desk();
+Locations.fridge = new Fridge();
+Locations.bed = new Bed();
+Locations.shower = new Shower();
 haxe_Serializer.USE_CACHE = false;
 haxe_Serializer.USE_ENUM_INDEX = false;
 haxe_Serializer.BASE64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789%:";
@@ -1909,6 +2088,7 @@ haxe_io_FPHelper.i64tmp = (function($this) {
 	return $r;
 }(this));
 js_Boot.__toStr = {}.toString;
+js_d3__$D3_InitPriority.important = "important";
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

@@ -1,6 +1,5 @@
 -debug
 
 -lib sure
--lib dconsole
 
 -js ../bin/debug/js/game.js

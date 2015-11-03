@@ -1,51 +1,118 @@
 package;
 
+import haxe.ds.GenericStack;
+import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 import js.Browser;
+import js.flipclock.FlipClock;
+import js.jquery.terminal.Terminal;
 import js.webStorage.LocalStorage;
 import markov.namegen.Generator;
 import markov.util.FileReader;
+import js.d3.D3;
 
 using StringTools;
 using markov.util.StringExtensions;
 using markov.util.FloatExtensions;
 
+class Location {
+	public var tag:String;
+	public var description:String;
+	public var actions:Array<Action>;
+	
+	public inline function new(tag:String, description:String) {
+		this.tag = tag;
+		this.description = description;
+		actions = new Array<Action>();
+	}
+}
+
+class Desk extends Location {
+	public inline function new() {
+		super("Desktop", "The old rig, designed for a hacker on steroids");
+		
+		actions.push(new Action([ "computer" ], 2, [ { problem: Problem.LULZ, effect:function(world:World):Void {
+			Terminal.insert("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
+		} } ]));
+	}
+}
+
+class Fridge extends Location {
+	public inline function new() {
+		super("Fridge", "The new fridge");
+		
+		actions.push(new Action([ "eat" ], 2, [ { problem: Problem.HUNGER, effect:function(world:World):Void {
+			Terminal.insert("You shuffle to the fridge and grab the first thing you see.");
+		} } ]));
+	}
+}
+
+class Bed extends Location {
+	public inline function new() {
+		super("Bed", "The old bed");
+		
+		actions.push(new Action([ "sleep" ], 2, [ { problem: Problem.TIREDNESS, effect:function(world:World):Void {
+			Terminal.insert("You settle down for a night of rest.");
+		} } ]));
+	}
+}
+
+class Shower extends Location {
+	public inline function new() {
+		super("Shower", "The shower.");
+		
+		actions.push(new Action([ "shower" ], 2, [ { problem: Problem.HYGIENE, effect:function(world:World):Void {
+			Terminal.insert("You wash the filth off your body.");
+		} } ]));
+	}
+}
+
+class Locations {
+	public static var desk:Desk = new Desk();
+	public static var fridge:Fridge = new Fridge();
+	public static var bed:Bed = new Bed();
+	public static var shower:Shower = new Shower();
+}
+
 class World {
+	public var context:GenericStack<Location>;
+	
 	public var actor:Actor;
 	
 	public var livesRuined:Int;
 	public var feelingsHurt:Int;
 	
 	private var date:Date;
-	public var minutes:Float;
-	// Grid
-	// Bounds
+	private var minutes:Float;
 	
 	private var actions:Array<Action>;
 	
-	public function new() {
+	public inline function new() {
 		livesRuined = 0;
 		feelingsHurt = 0;
+		date = Date.now();
 		minutes = 0;
 		
-		date = Date.now();
-		
-		actor = new Actor();
+		actor = new Actor(this);
 		
 		actions = new Array<Action>();
+		
+		context = new GenericStack<Location>();
 	}
 	
 	public function update(dt:Float):Void {
+		// Step the AI
+		for (action in actions) {
+			minutes += action.duration;
+			actor.act(action);
+		}
+		
 		// Step the date from the start time to the current time passed
 		date = DateTools.delta(date, minutes);
 		
-		// Step the AI
-		for (action in actions) {
-			actor.act(action);
-		}
 		actions = new Array<Action>();
 		actor.think(dt);
-		actor.decide();
+		//actor.decide();
 	}
 }
 
@@ -56,9 +123,10 @@ class World {
 	var TIREDNESS = 2;
 	var HUNGER = 3;
 	var HYGIENE = 4;
+	var FUNDS = 5;
 }
 
-// Motives influence the need to react to problems
+// Motives are measures of the need to react to problems
 class Motive {
 	public function new(id:Problem, initial:Float, rate:Float = 1.0, multiplier:Float = 1.0) {
 		this.id = id;
@@ -80,28 +148,33 @@ class Motive {
 }
 
 // Solutions to problems
-typedef ActionEffect = { var problem:Problem; var effect:Motive->World->Void; }
-class Action {
-	public function new(duration:Float, effects:Array<ActionEffect>) {
+typedef ActionEffect = { var problem:Problem; var effect:World->Void; }
+class Action {	
+	public function new(trigger:Array<String>, duration:Float, effects:Array<ActionEffect>) {
+		this.trigger = trigger;
 		this.duration = duration;
 		this.effects = effects;
 	}
 	
+	public var trigger:Array<String>;
 	public var duration:Float;
 	public var effects:Array<ActionEffect>;
 }
 
 // TODO need floating bits at the top for relevant info
+// TODO need buttons at the bottom for actions
 
 // Player AI
 class Actor {
+	private var world:World;
 	private var motives:Array<Motive>; // Reasons for doing stuff
-	private var traits:Array<Float->Float>; // Traits that effect the way some motives change over time e.g. slobs get hungrier faster
+	private var traits:IntMap<Float->Float>; // Traits that effect the way some motives change over time e.g. slobs get hungrier faster
 	private var experiences:Array<Int>; // Things the actor experienced since the last time it thought
 	
-	public function new() {
+	public inline function new(world:World) {
+		this.world = world;
 		motives = new Array<Motive>();
-		traits = new Array<Float->Float>();
+		traits = new IntMap<Float->Float>();
 		experiences = new Array<Int>();
 		
 		motives.push(new Motive(Problem.LULZ, 50, -1.0));
@@ -109,19 +182,20 @@ class Actor {
 		motives.push(new Motive(Problem.TIREDNESS, 20, 3));
 		motives.push(new Motive(Problem.HUNGER, 50, 2));
 		motives.push(new Motive(Problem.HYGIENE, 30, 5));
+		motives.push(new Motive(Problem.FUNDS, 5, -1));
 	}
 	
 	public function think(dt:Float):Void {
-		//for (e in experiences) {
-		//	
-		//}
-		// experiences = new Array<Int>();
+		for (e in experiences) {
+			
+		}
+		//experiences = new Array<Int>();
 		
 		// Generate a probability distribution for the motives
 	}
 	
 	public function decide():Void {
-		
+		// TODO avoid doing the same thing repeatedly, have upper limits to stuff? think smart objects...
 	}
 	
 	public function act(action:Action):Void {
@@ -130,9 +204,13 @@ class Actor {
 		}
 	}
 	
-	//public function forceAction(action:Action):Void {
-	//	
-	//}
+	public function forceAction(action:Action):Bool {
+		for (effect in action.effects) {
+			effect.effect(world);
+		}
+		
+		return true;
+	}
 	
 	// Location
 	// Coordinate
@@ -140,14 +218,13 @@ class Actor {
 
 class Main {
 	private var world:World;
+	private var clock:FlipClock;
 	
 	private var trainingData:StringMap<Array<String>>;
 	
     private static function main():Void {
 		new Main();
 	}
-	
-	// TODO make markov chains saveable so we can reuse them
 	
 	private inline function new() {
 		// TODO fromBase64 decode and fromJson to create generators for all the different text
@@ -186,15 +263,42 @@ class Main {
 			var saveName:String = LocalStorage.key(i);
 		}
 		
-		var g = new Generator();
-		g.init(trainingData.get("us_forenames"), 6, 0.01);
+		//var g = new Generator();
+		//g.init(trainingData.get("us_forenames"), 6, 0.01);
 		//trace(g.serialize());
 		
+		// TODO initialize time and locations using saved data
+		clock = new FlipClock(Browser.document.getElementById("time"), {});
 		world = new World();
+		world.context.add(Locations.desk);
+		world.context.add(Locations.bed);
+		world.context.add(Locations.fridge);
+		world.context.add(Locations.shower);
+				
+		Terminal.push(function(command:String, terminal:Dynamic) {			
+			for (location in world.context) {
+				for (action in location.actions) {
+					var containsParts:Bool = true;
+					for (part in action.trigger) {
+						if (!command.contains(part)) {
+							containsParts = false;
+							break;
+						}
+					}
+					if (action.trigger.length != 0 && containsParts) {
+						if (world.actor.forceAction(action)) {
+							clock.setTime(clock.getTime() + 1);
+						}
+					}
+				}
+			}
+		}, {
+			greetings: false,
+			name: '>'
+		} );
+		Terminal.insert("You have 24 hours...");
 		
-		Browser.document.addEventListener("console_log", function(e:Dynamic) {
-			trace(e.detail.data);
-		});
+		var tirednessGraph:NeedGraph = new NeedGraph("Tiredness", "#graphs", 500, 300);
 	}
 	
 	// Get a line of text
@@ -204,5 +308,55 @@ class Main {
 	
 	private function generateTweet(type:Int, topic:Int = 0, context:Dynamic = null):String {
 		return "I'm an enemy Tweet";
+	}
+	
+	private function generateActionButtons():Void {
+		
+	}
+}
+
+typedef TimeData = {
+	var time:Float;
+	var value:Float;
+}
+
+class NeedGraph {
+	private var title:String;
+	private var width:Int;
+	private var height:Int;
+	
+	public function new(title:String, elementId:String, width:Int, height:Int) {
+		this.title = title;
+		this.width = width;
+		this.height = height;
+		
+		// Ranges
+		var x = D3.scale.linear().range([0, width]);
+		var y = D3.scale.linear().range([height, 0]);
+		
+		// Axes
+		var xAxis = D3.svg.axis().scale(x).orient("bottom").ticks(5);
+		var yAxis = D3.svg.axis().scale(y).orient("left").ticks(5);
+		
+		// The line
+		var valueLine = D3.svg.line().x(function(d:TimeData) { return d.time; } ).y(function(d:TimeData) { return d.value; } );
+		
+		// The canvas
+		var svg = D3.select(elementId).append("svg").attr("width", width).attr("height", height).append("g");
+		
+		trace(svg);
+		
+		var data = [ { time: 0, value: 20 }, { time: 15, value: 40 }, { time: 30, value: 10 } ];
+		
+		for (d in data) {
+			
+		}
+		
+		svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text(title);
+		svg.append("path").datum(data).attr("class", "line").attr("d", valueLine);
+	}
+	
+	public function updateData():Void {
+		
 	}
 }

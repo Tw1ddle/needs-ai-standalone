@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,user-scalable=yes,initial-scale=1,maximum-scale=1">
-		<title>Markov Adventures</title>
+		<title>NEET Quest</title>
 		<meta name="author" content="Sam Twidale">
 		<link rel="icon" type="image/x-icon" href="icon/favicon.png">
 		<link rel="apple-touch-icon-precomposed" type="image/x-icon" href="icon/apple-touch-icon-precomposed.png">
@@ -13,23 +13,22 @@
 		<link rel="stylesheet" type="text/css" href="css/nouislider.css">
 		<link rel="stylesheet" type="text/css" href="css/nouislider.pips.css">
 		<link rel="stylesheet" type="text/css" href="css/jquery.terminal.css">
+		<link rel="stylesheet" type="text/css" href="css/flipclock.css">
 	</head>
 	
     <body>
 		<section id="header">
 			<div class="inner">
-				<!-- Icon -->
-				<h1>Social Media Troll Quest</h1>
-				<p>Needs-driven AI. Free and <a href="https://github.com/Tw1ddle/MarkovNameGenerator" target="_blank">open source</a>, written in <a href="http://haxe.org/" target="_blank">Haxe</a> by <a href="https://twitter.com/Sam_Twidale" target="_blank">Sam Twidale</a>. Inspired by <a href="http://www.bay12games.com/lcs/" target="_blank">Liberal Crime Squad</a>.</p>
+				<h1>NEET Quest</h1>
+				<h2>Not in Education, Employment, or Training.</h2>
+
+				<p>Text adventure demonstrating a <a href="http://www.gamasutra.com/view/feature/131519/designing_needbased_ai_for_.php" target="_blank">Needs-based AI</a>. Free and <a href="https://github.com/Tw1ddle/MarkovNameGenerator" target="_blank">open source</a>, written in <a href="http://haxe.org/" target="_blank">Haxe</a> by <a href="https://twitter.com/Sam_Twidale" target="_blank">Sam Twidale</a>.</p>
 				
-				<a href="https://github.com/Tw1ddle/MarkovNameGenerator" target="_blank">
-					<div id="time"></div>
-					<div id="best"></div>
-				</a>
+				<div id="time" class="container"></div>
 			</div>
 		</section>
 		
-		<section id="game">
+		<section id="game" class="container">
 			<div id="map">
 			</div>
 			
@@ -46,13 +45,18 @@
 			</div>
 		</section>
 		
+		<div id="graphs" class="stitched"></div>
+		
+		<div class="stitched">
+			<h2>What is this?</h2>
+			<p>This demonstrates a needs-based AI implementation. It simulates an Internet denizen. Inspired by <a href="http://www.bay12games.com/lcs/" target="_blank">Liberal Crime Squad</a>.</p>
+			<p>If you have any suggestions, requests or comments then feel free to <a href="http://samcodes.co.uk/contact/" target="_blank">contact me</a>.</p>
+		</div>
+		
 		<!-- <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js' charset='utf-8'></script> -->
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
 		<script type="text/javascript" src="js/jquery.terminal.js"></script>
-		<script type="text/javascript" src="js/wNumb.js"></script>
-		<script type="text/javascript" src="js/nouislider.js"></script>
-		<script type="text/javascript" src="js/game.js"></script>
 		<script>
 			terminal = $('#console').terminal(function(command, term) {
 				term.echo('');
@@ -72,5 +76,10 @@
 				});
 			});
 		</script>
+		<script type="text/javascript" src="js/wNumb.js"></script>
+		<script type="text/javascript" src="js/nouislider.js"></script>
+		<script type="text/javascript" src="js/flipclock.js"></script>
+		<script type="text/javascript" src="js/d3.js"></script>
+		<script type="text/javascript" src="js/game.js"></script>
     </body>
 </html>

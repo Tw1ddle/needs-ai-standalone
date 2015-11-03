@@ -1,6 +1,5 @@
 --no-traces
 
 -lib sure
--lib dconsole
 
 -js ../bin/release/js/game.js
