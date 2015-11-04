@@ -4,6 +4,7 @@ import haxe.ds.GenericStack;
 import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 import js.Browser;
+import js.d3.svg.SVG.Line;
 import js.flipclock.FlipClock;
 import js.jquery.terminal.Terminal;
 import js.webStorage.LocalStorage;
@@ -128,11 +129,21 @@ class World {
 
 // Motives are measures of the need to react to problems
 class Motive {
-	public function new(id:Problem, initial:Float, rate:Float = 1.0, multiplier:Float = 1.0) {
+	public function new(id:Problem, initial:Float, rate:Float = 1.0, multiplier:Float = 1.0, tag:String = "Unnamed Motive", decayCurve:Float->Float = null) {
 		this.id = id;
 		this.value = initial;
 		this.rate = rate;
 		this.multiplier = multiplier;
+		this.tag = tag;
+		
+		if(decayCurve != null) {
+			this.decayCurve = decayCurve;
+		} else {
+			// Linear
+			this.decayCurve = function(v:Float):Float {
+				return v;
+			}
+		}
 	}
 	
 	public function update(dt:Float):Void {
@@ -144,6 +155,7 @@ class Motive {
 	public var value:Float;
 	public var rate:Float;
 	public var multiplier:Float;
+	public var tag:String;
 	public var decayCurve:Float->Float;
 }
 
@@ -166,10 +178,10 @@ class Action {
 
 // Player AI
 class Actor {
-	private var world:World;
-	private var motives:Array<Motive>; // Reasons for doing stuff
-	private var traits:IntMap<Float->Float>; // Traits that effect the way some motives change over time e.g. slobs get hungrier faster
-	private var experiences:Array<Int>; // Things the actor experienced since the last time it thought
+	public var world:World;
+	public var motives:Array<Motive>; // Reasons for doing stuff
+	public var traits:IntMap<Float->Float>; // Traits that effect the way some motives change over time e.g. slobs get hungrier faster
+	public var experiences:Array<Int>; // Things the actor experienced since the last time it thought
 	
 	public inline function new(world:World) {
 		this.world = world;
@@ -219,6 +231,7 @@ class Actor {
 class Main {
 	private var world:World;
 	private var clock:FlipClock;
+	private var graphs:IntMap<NeedGraph>;
 	
 	private var trainingData:StringMap<Array<String>>;
 	
@@ -298,7 +311,11 @@ class Main {
 		} );
 		Terminal.insert("You have 24 hours...");
 		
-		var tirednessGraph:NeedGraph = new NeedGraph("Tiredness", "#graphs", 500, 300);
+		graphs = new IntMap<NeedGraph>();
+		for (motive in world.actor.motives) {
+			var graph:NeedGraph = new NeedGraph(motive, "#graphs", 200, 100);
+			graphs.set(motive.id, graph);
+		}
 	}
 	
 	// Get a line of text
@@ -325,35 +342,40 @@ class NeedGraph {
 	private var width:Int;
 	private var height:Int;
 	
-	public function new(title:String, elementId:String, width:Int, height:Int) {
-		this.title = title;
-		this.width = width;
-		this.height = height;
+	private var minY:Int = 0;
+	private var maxY:Int = 100;
+	
+	public function new(need:Motive, elementId:String, width:Int, height:Int) {
+		this.title = need.tag;
+		
+		var margin = { top: 20, right: 20, bottom: 30, left: 50 };
+		this.width = width - margin.left - margin.right;
+		this.height = height - margin.top - margin.bottom;
+		
+		var data = [ { time: 240, value: 0 }, { time: 340, value: 90 }, { time: 630, value: 10 } ];
 		
 		// Ranges
 		var x = D3.scale.linear().range([0, width]);
 		var y = D3.scale.linear().range([height, 0]);
 		
+		x.domain(D3.extent(data, function(d:TimeData):Float { return d.time; }));
+		y.domain(D3.extent(data, function(d:TimeData):Float { return d.value; }));
+		
 		// Axes
-		var xAxis = D3.svg.axis().scale(x).orient("bottom").ticks(5);
-		var yAxis = D3.svg.axis().scale(y).orient("left").ticks(5);
+		var xAxis = D3.svg.axis().scale(x).orient("bottom").ticks(4);
+		var yAxis = D3.svg.axis().scale(y).orient("left").ticks(4);
 		
 		// The line
-		var valueLine = D3.svg.line().x(function(d:TimeData) { return d.time; } ).y(function(d:TimeData) { return d.value; } );
+		var line:Line = D3.svg.line().x(function(d:TimeData) { return d.time; } ).y(function(d:TimeData) { return d.value; } );
 		
 		// The canvas
-		var svg = D3.select(elementId).append("svg").attr("width", width).attr("height", height).append("g");
+		var svg = D3.select(elementId).append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		
-		trace(svg);
-		
-		var data = [ { time: 0, value: 20 }, { time: 15, value: 40 }, { time: 30, value: 10 } ];
-		
-		for (d in data) {
-			
-		}
-		
-		svg.append("g").attr("class", "y axis").call(yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text(title);
-		svg.append("path").datum(data).attr("class", "line").attr("d", valueLine);
+		svg.append("g").attr("class", "axis").attr("transform", "translate(0," + height + ")").call(xAxis);
+		svg.append("g").attr("class", "axis").call(yAxis);
+		//svg.append("g").attr("class", "axis").append("text").attr("class", "axis-label").attr("transform", "rotate(-90)").attr("y", -margin.left + 10).attr("x", -height / 2 - margin.top).text(need.tag);
+		svg.append("g").attr("class", "title").append("text").attr("x", width / 2).attr("y", -margin.top / 2).attr("text-anchor", "middle").text(need.tag);
+		svg.append("path").datum(data).attr("class", "line").attr("d", line);
 	}
 	
 	public function updateData():Void {

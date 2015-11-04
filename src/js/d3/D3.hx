@@ -97,7 +97,9 @@ extern class D3
     public static function min(arr:Array<Dynamic>,?accessor:Dynamic->Dynamic):Dynamic;
     
 	@:overload(function(arr:Dynamic,?accessor:Dynamic->Dynamic):Dynamic{})
-	public static function max(arr:Array<Dynamic>,?accessor:Dynamic->Dynamic):Dynamic;
+	public static function max(arr:Array<Dynamic>, ?accessor:Dynamic->Dynamic):Dynamic;
+	
+	public static function extent(arr:Array<Dynamic>, ?accessor:Dynamic->Dynamic):Dynamic;
    
 	public static function quantile(arr:Array<Float>,p:Float):Float;
     public static function bisectLeft(arr:Array<Dynamic>,x:Dynamic, ?lo:Dynamic, ?hi:Dynamic):Int;

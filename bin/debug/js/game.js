@@ -192,13 +192,18 @@ World.prototype = {
 	}
 	,__class__: World
 };
-var Motive = function(id,initial,rate,multiplier) {
+var Motive = function(id,initial,rate,multiplier,tag,decayCurve) {
+	if(tag == null) tag = "Unnamed Motive";
 	if(multiplier == null) multiplier = 1.0;
 	if(rate == null) rate = 1.0;
 	this.id = id;
 	this.value = initial;
 	this.rate = rate;
 	this.multiplier = multiplier;
+	this.tag = tag;
+	if(decayCurve != null) this.decayCurve = decayCurve; else this.decayCurve = function(v) {
+		return v;
+	};
 };
 $hxClasses["Motive"] = Motive;
 Motive.__name__ = ["Motive"];
@@ -325,7 +330,15 @@ Main.prototype = {
 			}
 		},{ greetings : false, name : ">"});
 		terminal.insert("You have 24 hours...");
-		var tirednessGraph = new NeedGraph("Tiredness","#graphs",500,300);
+		this.graphs = new haxe_ds_IntMap();
+		var _g5 = 0;
+		var _g12 = this.world.actor.motives;
+		while(_g5 < _g12.length) {
+			var motive = _g12[_g5];
+			++_g5;
+			var graph = new NeedGraph(motive,"#graphs",200,100);
+			this.graphs.h[motive.id] = graph;
+		}
 	}
 	,talk: function(type,topic,context) {
 		if(topic == null) topic = 0;
@@ -339,29 +352,37 @@ Main.prototype = {
 	}
 	,__class__: Main
 };
-var NeedGraph = function(title,elementId,width,height) {
-	this.title = title;
-	this.width = width;
-	this.height = height;
+var NeedGraph = function(need,elementId,width,height) {
+	this.maxY = 100;
+	this.minY = 0;
+	this.title = need.tag;
+	var margin_top = 20;
+	var margin_right = 20;
+	var margin_bottom = 30;
+	var margin_left = 50;
+	this.width = width - margin_left - margin_right;
+	this.height = height - margin_top - margin_bottom;
+	var data = [{ time : 240, value : 0},{ time : 340, value : 90},{ time : 630, value : 10}];
 	var x = d3.scale.linear().range([0,width]);
 	var y = d3.scale.linear().range([height,0]);
-	var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5);
-	var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5);
-	var valueLine = d3.svg.line().x(function(d) {
+	x.domain(d3.extent(data,function(d2) {
+		return d2.time;
+	}));
+	y.domain(d3.extent(data,function(d3) {
+		return d3.value;
+	}));
+	var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(4);
+	var yAxis = d3.svg.axis().scale(y).orient("left").ticks(4);
+	var line = d3.svg.line().x(function(d) {
 		return d.time;
 	}).y(function(d1) {
 		return d1.value;
 	});
-	var svg = d3.select(elementId).append("svg").attr("width",width).attr("height",height).append("g");
-	console.log(svg);
-	var data = [{ time : 0, value : 20},{ time : 15, value : 40},{ time : 30, value : 10}];
-	var _g = 0;
-	while(_g < data.length) {
-		var d2 = data[_g];
-		++_g;
-	}
-	svg.append("g").attr("class","y axis").call(yAxis).append("text").attr("transform","rotate(-90)").attr("y",6).attr("dy",".71em").style("text-anchor","end").text(title);
-	svg.append("path").datum(data).attr("class","line").attr("d",valueLine);
+	var svg = d3.select(elementId).append("svg").attr("width",width + margin_left + margin_right).attr("height",height + margin_top + margin_bottom).append("g").attr("transform","translate(" + margin_left + "," + margin_top + ")");
+	svg.append("g").attr("class","axis").attr("transform","translate(0," + height + ")").call(xAxis);
+	svg.append("g").attr("class","axis").call(yAxis);
+	svg.append("g").attr("class","title").append("text").attr("x",width / 2).attr("y",-margin_top / 2).attr("text-anchor","middle").text(need.tag);
+	svg.append("path").datum(data).attr("class","line").attr("d",line);
 };
 $hxClasses["NeedGraph"] = NeedGraph;
 NeedGraph.__name__ = ["NeedGraph"];

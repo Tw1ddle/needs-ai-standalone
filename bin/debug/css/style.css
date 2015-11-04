@@ -267,16 +267,27 @@ a:hover {
 	text-align: center;
 }
 
-path { 
-    stroke: steelblue;
-    stroke-width: 2;
-    fill: none;
+.axis path {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
 }
 
-.axis path,
-.axis line {
-    fill: none;
-    stroke: grey;
-    stroke-width: 1;
-    shape-rendering: crispEdges;
+.axis .axis-label {
+	font-size: 10px;
+}
+
+.title {
+	font-weight: bold;
+	font-size: 10px;
+}
+
+.tick {
+	font-weight: bold;
+	font-size: 10px;
+}
+
+.tick line {
+	stroke: gray;
+	opacity: 0.6;
 }
