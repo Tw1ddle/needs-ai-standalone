@@ -79,6 +79,8 @@ var Action = function(trigger,duration,effects) {
 Action.__name__ = true;
 var Locations = function() { };
 Locations.__name__ = true;
+var NullActions = function() { };
+NullActions.__name__ = true;
 var Motive = function(id,initial,rate,multiplier,tag,decayCurve) {
 	if(tag == null) tag = "Unnamed Motive";
 	if(multiplier == null) multiplier = 1.0;
@@ -154,7 +156,23 @@ Main.main = function() {
 	new Main();
 };
 Main.prototype = {
-	onWindowLoaded: function() {
+	handleAction: function(action) {
+		this.world.actor.experiences.push(action);
+		this.world.actor.act();
+		this.clock.setTime(this.clock.getTime() + action.duration);
+		var _g = 0;
+		var _g1 = action.effects;
+		while(_g < _g1.length) {
+			var effect = _g1[_g];
+			++_g;
+			var graph = this.graphs.h[effect.problem];
+			graph.addData({ time : this.world.minutes, value : this.world.actor.motives[effect.problem].value});
+		}
+	}
+	,flail: function() {
+		terminal.insert(markov_util_ArrayExtensions.randomElement(NullActions.unrecognizedCommand));
+	}
+	,onWindowLoaded: function() {
 		var _g = this;
 		var len = localStorage.$length;
 		var _g1 = 0;
@@ -170,6 +188,7 @@ Main.prototype = {
 		this.world.context.add(Locations.shower);
 		this.generateActionButtons();
 		terminal.push(function(command,terminal) {
+			var recognizedCommand = false;
 			var $it0 = _g.world.context.iterator();
 			while( $it0.hasNext() ) {
 				var location = $it0.next();
@@ -190,20 +209,12 @@ Main.prototype = {
 						}
 					}
 					if(action.trigger.length != 0 && containsParts) {
-						_g.world.actor.experiences.push(action);
-						_g.world.actor.act();
-						_g.clock.setTime(_g.clock.getTime() + action.duration);
-						var _g31 = 0;
-						var _g41 = action.effects;
-						while(_g31 < _g41.length) {
-							var effect = _g41[_g31];
-							++_g31;
-							var graph = _g.graphs.h[effect.problem];
-							graph.addData({ time : _g.world.minutes, value : _g.world.actor.motives[effect.problem].value});
-						}
+						recognizedCommand = true;
+						_g.handleAction(action);
 					}
 				}
 			}
+			if(!recognizedCommand && command.length != 0) terminal.insert(markov_util_ArrayExtensions.randomElement(NullActions.unrecognizedCommand));
 			_g.generateActionButtons();
 		},{ greetings : false, name : ">"});
 		terminal.insert("You have 24 hours...");
@@ -213,8 +224,8 @@ Main.prototype = {
 		while(_g5 < _g12.length) {
 			var motive = _g12[_g5];
 			++_g5;
-			var graph1 = new NeedGraph(motive,[{ time : 240, value : 0},{ time : 340, value : 90},{ time : 630, value : 10}],"#graphs",200,100);
-			this.graphs.h[motive.id] = graph1;
+			var graph = new NeedGraph(motive,[{ time : 240, value : 0},{ time : 340, value : 90},{ time : 630, value : 10}],"#graphs",200,100);
+			this.graphs.h[motive.id] = graph;
 		}
 	}
 	,generateActionButtons: function() {
@@ -231,6 +242,7 @@ Main.prototype = {
 				++_g;
 				var triggers = action[0].trigger.toString();
 				var btn = window.document.createElement("button");
+				btn.id = "button";
 				var t = window.document.createTextNode(triggers);
 				btn.appendChild(t);
 				actions.appendChild(btn);
@@ -286,6 +298,11 @@ NeedGraph.prototype = {
 	}
 };
 Math.__name__ = true;
+var Std = function() { };
+Std.__name__ = true;
+Std.random = function(x) {
+	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
+};
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = true;
 var haxe_ds_GenericCell = function(elt,next) {
@@ -398,6 +415,69 @@ js_Boot.__string_rec = function(o,s) {
 };
 var js_d3__$D3_InitPriority = function() { };
 js_d3__$D3_InitPriority.__name__ = true;
+var markov_util_ArrayExtensions = function() { };
+markov_util_ArrayExtensions.__name__ = true;
+markov_util_ArrayExtensions.randomElementFromArrays = function(arrays) {
+	if(!(arrays != null && arrays.length != 0)) throw new js__$Boot_HaxeError("FAIL: arrays != null && arrays.length != 0");
+	var totalLength = 0;
+	var lengths = [];
+	var _g = 0;
+	while(_g < arrays.length) {
+		var array = arrays[_g];
+		++_g;
+		if(!(array != null && array.length != 0)) throw new js__$Boot_HaxeError("FAIL: array != null && array.length != 0");
+		totalLength += array.length;
+		lengths.push(totalLength);
+	}
+	var n = Math.random() * totalLength;
+	var i = 0;
+	while(i < lengths.length) {
+		if(n < lengths[i]) return markov_util_ArrayExtensions.randomElement(arrays[i]);
+		i++;
+	}
+	throw new js__$Boot_HaxeError("Failed to get random element");
+};
+markov_util_ArrayExtensions.randomElement = function(array) {
+	if(!(array != null && array.length != 0)) throw new js__$Boot_HaxeError("FAIL: array != null && array.length != 0");
+	return array[Std.random(array.length)];
+};
+markov_util_ArrayExtensions.noNulls = function(array) {
+	if(!(array != null)) throw new js__$Boot_HaxeError("FAIL: array != null");
+	var _g = 0;
+	while(_g < array.length) {
+		var e = array[_g];
+		++_g;
+		if(e == null) return false;
+	}
+	return true;
+};
+markov_util_ArrayExtensions.binarySearchCmp = function(a,x,min,max,comparator) {
+	if(!(a != null)) throw new js__$Boot_HaxeError("FAIL: a != null");
+	if(!(min >= 0 && min < a.length)) throw new js__$Boot_HaxeError("FAIL: min >= 0 && min < a.length");
+	if(!(max >= 0 && max < a.length)) throw new js__$Boot_HaxeError("FAIL: max >= 0 && max < a.length");
+	if(!(comparator != null)) throw new js__$Boot_HaxeError("FAIL: comparator != null");
+	var low = min;
+	var high = max + 1;
+	var middle;
+	while(low < high) {
+		middle = low + (high - low >> 1);
+		if(comparator(a[middle],x) < 0) low = middle + 1; else high = middle;
+	}
+	if(low <= max && comparator(a[low],x) == 0) return low; else return ~low;
+};
+markov_util_ArrayExtensions.binarySearch = function(a,x,min,max) {
+	if(!(a != null)) throw new js__$Boot_HaxeError("FAIL: a != null");
+	if(!(min >= 0 && min < a.length)) throw new js__$Boot_HaxeError("FAIL: min >= 0 && min < a.length");
+	if(!(max >= 0 && max < a.length)) throw new js__$Boot_HaxeError("FAIL: max >= 0 && max < a.length");
+	var low = min;
+	var high = max + 1;
+	var middle;
+	while(low < high) {
+		middle = low + (high - low >> 1);
+		if(a[middle] < x) low = middle + 1; else high = middle;
+	}
+	if(low <= max && a[low] == x) return low; else return ~low;
+};
 var markov_util_FloatExtensions = function() { };
 markov_util_FloatExtensions.__name__ = true;
 markov_util_FloatExtensions.clamp = function(v,min,max) {
@@ -471,6 +551,7 @@ Locations.desk = new Desk();
 Locations.fridge = new Fridge();
 Locations.bed = new Bed();
 Locations.shower = new Shower();
+NullActions.unrecognizedCommand = ["You flail uselessly."];
 js_d3__$D3_InitPriority.important = "important";
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}});

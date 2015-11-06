@@ -13,6 +13,13 @@ import Locations;
 using StringTools;
 using markov.util.StringExtensions;
 using markov.util.FloatExtensions;
+using markov.util.ArrayExtensions;
+
+class NullActions {
+	public static var unrecognizedCommand:Array<String> = [ 
+	"You flail uselessly.",
+	];
+}
 
 // Like Sims "commodities", express a class of need e.g. to be in the gym, to not go hungry
 @:enum abstract Problem(Int) from Int to Int {
@@ -147,6 +154,21 @@ class Main {
 		Browser.window.onload = onWindowLoaded;
 	}
 	
+	private inline function handleAction(action:Action):Void {
+		world.actor.experiences.push(action);
+		world.actor.act();
+		clock.setTime(clock.getTime() + action.duration);
+		
+		for (effect in action.effects) {
+			var graph = graphs.get(effect.problem);
+			graph.addData( { time: world.minutes, value: world.actor.motives[effect.problem].value } );
+		}
+	}
+	
+	private inline function flail():Void {
+		Terminal.insert(NullActions.unrecognizedCommand.randomElement());
+	}
+	
 	private inline function onWindowLoaded():Void {
 		// Get save data, create a list of saves which will either be a time, or else a "new game" option
 		var len:Int = LocalStorage.length;
@@ -168,7 +190,8 @@ class Main {
 		
 		generateActionButtons();
 		
-		Terminal.push(function(command:String, terminal:Dynamic) {			
+		Terminal.push(function(command:String, terminal:Dynamic) {
+			var recognizedCommand:Bool = false;
 			for (location in world.context) {
 				for (action in location.actions) {
 					var containsParts:Bool = true;
@@ -179,16 +202,15 @@ class Main {
 						}
 					}
 					if (action.trigger.length != 0 && containsParts) {
-						world.actor.experiences.push(action);
-						world.actor.act();
-						clock.setTime(clock.getTime() + action.duration);
+						recognizedCommand = true;
 						
-						for (effect in action.effects) {
-							var graph = graphs.get(effect.problem);
-							graph.addData( { time: world.minutes, value: world.actor.motives[effect.problem].value } );
-						}
+						handleAction(action);
 					}
 				}
+			}
+			
+			if (!recognizedCommand && command.length != 0) {
+				flail();
 			}
 			
 			generateActionButtons();
