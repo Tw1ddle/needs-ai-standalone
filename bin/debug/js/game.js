@@ -242,7 +242,6 @@ Main.prototype = {
 				++_g;
 				var triggers = action[0].trigger.toString();
 				var btn = window.document.createElement("button");
-				btn.id = "button";
 				var t = window.document.createTextNode(triggers);
 				btn.appendChild(t);
 				actions.appendChild(btn);

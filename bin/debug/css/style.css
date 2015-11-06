@@ -170,3 +170,8 @@ svg {
 	position:relative;
 	top:1px;
 }
+
+.flip-clock-label
+{
+    display: none;
+}
