@@ -97,12 +97,20 @@ a:hover {
 	text-align: center;
 }
 
-.axis path {
+.xaxis path {
 	fill: none;
 	stroke: #000;
 	shape-rendering: crispEdges;
 }
-.axis .axis-label {
+.xaxis .axis-label {
+	font-size: 10px;
+}
+.yaxis path {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+.yaxis .axis-label {
 	font-size: 10px;
 }
 .title {
@@ -116,6 +124,11 @@ a:hover {
 .tick line {
 	stroke: gray;
 	opacity: 0.6;
+}
+path { 
+    stroke: black;
+    stroke-width: 2;
+    fill: none;
 }
 
 svg {

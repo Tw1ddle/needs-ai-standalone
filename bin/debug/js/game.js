@@ -159,6 +159,7 @@ Main.prototype = {
 	handleAction: function(action) {
 		this.world.actor.experiences.push(action);
 		this.world.actor.act();
+		this.world.minutes += action.duration;
 		this.clock.setTime(this.clock.getTime() + action.duration);
 		var _g = 0;
 		var _g1 = action.effects;
@@ -224,7 +225,7 @@ Main.prototype = {
 		while(_g5 < _g12.length) {
 			var motive = _g12[_g5];
 			++_g5;
-			var graph = new NeedGraph(motive,[{ time : 240, value : 0},{ time : 340, value : 90},{ time : 630, value : 10}],"#graphs",200,100);
+			var graph = new NeedGraph(motive,[{ time : 0, value : motive.value},{ time : 1, value : motive.value}],"#graphs",200,100);
 			this.graphs.h[motive.id] = graph;
 		}
 	}
@@ -247,8 +248,7 @@ Main.prototype = {
 				actions.appendChild(btn);
 				btn.onclick = (function(action) {
 					return function() {
-						_g2.world.actor.experiences.push(action[0]);
-						_g2.world.actor.act();
+						_g2.handleAction(action[0]);
 					};
 				})(action);
 			}
@@ -258,38 +258,57 @@ Main.prototype = {
 var NeedGraph = function(need,data,elementId,width,height) {
 	this.maxY = 100;
 	this.minY = 0;
+	var _g = this;
 	this.data = data;
 	this.title = need.tag;
+	this.elementId = elementId;
+	this.graphId = StringTools.replace(elementId,"#","") + "_" + (need.id == null?"null":"" + need.id);
 	var margin_top = 20;
 	var margin_right = 20;
 	var margin_bottom = 30;
 	var margin_left = 50;
 	this.width = width - margin_left - margin_right;
 	this.height = height - margin_top - margin_bottom;
-	var x = d3.scale.linear().range([0,width]);
-	var y = d3.scale.linear().range([height,0]);
-	x.domain(d3.extent(data,function(d2) {
-		return d2.time;
-	}));
-	y.domain(d3.extent(data,function(d3) {
-		return d3.value;
-	}));
-	var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(4);
-	var yAxis = d3.svg.axis().scale(y).orient("left").ticks(4);
-	var line = d3.svg.line().x(function(d) {
+	this.x = d3.scale.linear().range([0,width]);
+	this.y = d3.scale.linear().range([height,0]);
+	this.x.domain(d3.extent(data,function(d) {
 		return d.time;
-	}).y(function(d1) {
+	}));
+	this.y.domain(d3.extent(data,function(d1) {
 		return d1.value;
+	}));
+	this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").ticks(4);
+	this.yAxis = d3.svg.axis().scale(this.y).orient("left").ticks(4);
+	this.line = d3.svg.line().x(function(d2) {
+		return _g.x(d2.time);
+	}).y(function(d3) {
+		return _g.y(d3.value);
 	});
-	var svg = d3.select(elementId).append("svg").attr("width",width + margin_left + margin_right).attr("height",height + margin_top + margin_bottom).append("g").attr("transform","translate(" + margin_left + "," + margin_top + ")");
-	svg.append("g").attr("class","axis").attr("transform","translate(0," + height + ")").call(xAxis);
-	svg.append("g").attr("class","axis").call(yAxis);
-	svg.append("g").attr("class","title").append("text").attr("x",width / 2).attr("y",-margin_top / 2).attr("text-anchor","middle").text(need.tag);
-	svg.append("path").datum(data).attr("class","line").attr("d",line);
+	this.svg = d3.select(elementId).append("svg").attr("class",this.graphId).attr("width",width + margin_left + margin_right).attr("height",height + margin_top + margin_bottom).append("g").attr("transform","translate(" + margin_left + "," + margin_top + ")");
+	this.svg.append("g").attr("class","xaxis").attr("transform","translate(0," + height + ")").call(this.xAxis);
+	this.svg.append("g").attr("class","yaxis").call(this.yAxis);
+	this.svg.append("g").attr("class","title").append("text").attr("x",width / 2).attr("y",-margin_top / 2).attr("text-anchor","middle").text(need.tag);
+	this.svg.append("path").datum(data).attr("class","line").attr("d",this.line);
 };
 NeedGraph.__name__ = true;
 NeedGraph.prototype = {
 	updateData: function() {
+		var _g = this;
+		this.x.domain(d3.extent(this.data,function(d) {
+			return d.time;
+		}));
+		this.y.domain(d3.extent(this.data,function(d1) {
+			return d1.value;
+		}));
+		this.line = d3.svg.line().x(function(d2) {
+			return _g.x(d2.time);
+		}).y(function(d3) {
+			return _g.y(d3.value);
+		});
+		var sel = d3.select("." + this.graphId).transition();
+		sel.select(".line").attr("d",this.line);
+		sel.select(".xaxis").call(this.xAxis);
+		sel.select(".yaxis").call(this.yAxis);
 	}
 	,addData: function(d) {
 		this.data.push(d);
@@ -301,6 +320,11 @@ var Std = function() { };
 Std.__name__ = true;
 Std.random = function(x) {
 	if(x <= 0) return 0; else return Math.floor(Math.random() * x);
+};
+var StringTools = function() { };
+StringTools.__name__ = true;
+StringTools.replace = function(s,sub,by) {
+	return s.split(sub).join(by);
 };
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = true;

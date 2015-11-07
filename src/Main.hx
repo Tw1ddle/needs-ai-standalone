@@ -4,6 +4,9 @@ import haxe.ds.GenericStack;
 import haxe.ds.IntMap;
 import js.Browser;
 import js.d3.D3;
+import js.d3.scale.Scale.Linear;
+import js.d3.selection.Selection;
+import js.d3.svg.SVG;
 import js.d3.svg.SVG.Line;
 import js.flipclock.FlipClock;
 import js.jquery.terminal.Terminal;
@@ -157,6 +160,7 @@ class Main {
 	private inline function handleAction(action:Action):Void {
 		world.actor.experiences.push(action);
 		world.actor.act();
+		world.minutes += action.duration;
 		clock.setTime(clock.getTime() + action.duration);
 		
 		for (effect in action.effects) {
@@ -222,7 +226,7 @@ class Main {
 		
 		graphs = new IntMap<NeedGraph>();
 		for (motive in world.actor.motives) {
-			var graph:NeedGraph = new NeedGraph(motive, [ { time: 240, value: 0 }, { time: 340, value: 90 }, { time: 630, value: 10 } ], "#graphs", 200, 100);
+			var graph:NeedGraph = new NeedGraph(motive, [ { time: 0, value: motive.value }, { time: 1, value: motive.value } ], "#graphs", 200, 100);
 			graphs.set(motive.id, graph);
 		}
 	}
@@ -241,8 +245,7 @@ class Main {
 				btn.appendChild(t);
 				actions.appendChild(btn);
 				btn.onclick = function():Void {
-					world.actor.experiences.push(action);
-					world.actor.act();
+					handleAction(action);
 				};
 			}
 		}
@@ -263,40 +266,64 @@ class NeedGraph {
 	public var minY:Int = 0;
 	public var maxY:Int = 100;
 	
+	public var x:Linear;
+	public var y:Linear;
+	public var xAxis:Axis;
+	public var yAxis:Axis;
+	
+	public var elementId:String;
+	
+	public var svg:Selection;
+	
+	public var line:Line;
+	
+	public var graphId:String;
+	
 	public function new(need:Motive, data:Array<TimeData>, elementId:String, width:Int, height:Int) {
 		this.data = data;
 		this.title = need.tag;
+		this.elementId = elementId;
+		this.graphId = elementId.replace("#", "") + "_" + Std.string(need.id);
 		
 		var margin = { top: 20, right: 20, bottom: 30, left: 50 };
 		this.width = width - margin.left - margin.right;
 		this.height = height - margin.top - margin.bottom;
 		
 		// Ranges
-		var x = D3.scale.linear().range([0, width]);
-		var y = D3.scale.linear().range([height, 0]);
+		x = D3.scale.linear().range([0, width]);
+		y = D3.scale.linear().range([height, 0]);
 		
 		x.domain(D3.extent(data, function(d:TimeData):Float { return d.time; }));
 		y.domain(D3.extent(data, function(d:TimeData):Float { return d.value; }));
 		
 		// Axes
-		var xAxis = D3.svg.axis().scale(x).orient("bottom").ticks(4);
-		var yAxis = D3.svg.axis().scale(y).orient("left").ticks(4);
+		xAxis = D3.svg.axis().scale(x).orient("bottom").ticks(4);
+		yAxis = D3.svg.axis().scale(y).orient("left").ticks(4);
 		
 		// The line
-		var line:Line = D3.svg.line().x(function(d:TimeData) { return d.time; } ).y(function(d:TimeData) { return d.value; } );
+		line = D3.svg.line().x(function(d:TimeData) { return untyped x(d.time); } ).y(function(d:TimeData) { return untyped y(d.value); } );
 		
 		// The canvas
-		var svg = D3.select(elementId).append("svg").attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		svg = D3.select(elementId).append("svg").attr("class", graphId).attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 		
-		svg.append("g").attr("class", "axis").attr("transform", "translate(0," + height + ")").call(xAxis);
-		svg.append("g").attr("class", "axis").call(yAxis);
+		svg.append("g").attr("class", "xaxis").attr("transform", "translate(0," + height + ")").call(xAxis);
+		svg.append("g").attr("class", "yaxis").call(yAxis);
 		//svg.append("g").attr("class", "axis").append("text").attr("class", "axis-label").attr("transform", "rotate(-90)").attr("y", -margin.left + 10).attr("x", -height / 2 - margin.top).text(need.tag);
 		svg.append("g").attr("class", "title").append("text").attr("x", width / 2).attr("y", -margin.top / 2).attr("text-anchor", "middle").text(need.tag);
 		svg.append("path").datum(data).attr("class", "line").attr("d", line);
 	}
 	
 	public function updateData():Void {
+		x.domain(D3.extent(data, function(d:TimeData):Float { return d.time; }));
+		y.domain(D3.extent(data, function(d:TimeData):Float { return d.value; } ));
 		
+		line = D3.svg.line().x(function(d:TimeData) { return untyped x(d.time); } ).y(function(d:TimeData) { return untyped y(d.value); } );
+		
+		var sel = D3.select("." + graphId).transition();
+		
+		sel.select(".line").attr("d", line);
+		sel.select(".xaxis").call(xAxis);
+		sel.select(".yaxis").call(yAxis);
 	}
 	
 	public function addData(d:TimeData):Void {
