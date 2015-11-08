@@ -23,11 +23,11 @@ extern class Terminal {
 	static function get_output(raw:Bool):Void;
 	static function resize(width:Int, height:Int):Void;
 	static function flush():Void;
-	static function echo(s:String, options:Dynamic):Void;
+	static function echo(s:String, ?options:Dynamic):Void;
 	static function error(message:String, finalize:Bool):Void;
 	static function scroll(amount:Float):Void;
 	static function name():String;
-	static function push(interpreter:Dynamic, options:Dynamic):Void;
+	static function push(interpreter:Dynamic, ?options:Dynamic):Void;
 	static function pop(?name:String):Void;
 	static function level():Int;
 	static function purge():Void;

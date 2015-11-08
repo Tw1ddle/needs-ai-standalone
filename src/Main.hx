@@ -6,11 +6,10 @@ import js.Browser;
 import js.d3.D3;
 import js.d3.scale.Scale.Linear;
 import js.d3.selection.Selection;
-import js.d3.svg.SVG;
+import js.d3.svg.SVG.Axis;
 import js.d3.svg.SVG.Line;
 import js.flipclock.FlipClock;
 import js.jquery.terminal.Terminal;
-import js.webStorage.LocalStorage;
 import Locations;
 
 using StringTools;
@@ -20,48 +19,50 @@ using markov.util.ArrayExtensions;
 
 class NullActions {
 	public static var unrecognizedCommand:Array<String> = [ 
-	"You flail uselessly.",
+	"You flail uselessly."
 	];
 }
 
 // Like Sims "commodities", express a class of need e.g. to be in the gym, to not go hungry
 @:enum abstract Problem(Int) from Int to Int {
 	var LULZ = 0;
-	var SELFESTEEM = 1;
-	var TIREDNESS = 2;
-	var HUNGER = 3;
-	var HYGIENE = 4;
-	var FUNDS = 5;
+	var TIREDNESS = 1;
+	var HUNGER = 2;
+	var HYGIENE = 3;
+	var BLADDER = 4;
 }
 
 // Motives are measures of the need to react to problems
 class Motive {
 	public var id:Int;
-	public var value:Float;
-	public var rate:Float;
-	public var multiplier:Float;
+	public var value(default, set):Float;
+	public var drainRate:Float;
+	public var modifier:Float;
 	public var tag:String;
-	public var decayCurve:Float->Float;
+	public var drainCurve:Float->Float;
 	
-	public function new(id:Problem, initial:Float, rate:Float = 1.0, multiplier:Float = 1.0, tag:String = "Unnamed Motive", decayCurve:Float->Float = null) {
+	public function new(id:Problem, initialValue:Float, drainRate:Float = 0.01, drainModifier:Float = 1.0, tag:String = "Unnamed Motive", drainCurve:Float->Float = null) {
 		this.id = id;
-		this.value = initial;
-		this.rate = rate;
-		this.multiplier = multiplier;
+		this.value = initialValue;
+		this.drainRate = drainRate;
+		this.modifier = drainModifier;
 		this.tag = tag;
 		
-		if(decayCurve != null) {
-			this.decayCurve = decayCurve;
+		if(drainCurve != null) {
+			this.drainCurve = drainCurve;
 		} else {
-			this.decayCurve = function(v:Float):Float {
+			this.drainCurve = function(v:Float):Float {
 				return v;
 			}
 		}
 	}
 	
 	public function update(dt:Float):Void {
-		value += decayCurve(value) * dt * rate * multiplier;
-		value = value.clamp(0, 100);
+		value += drainCurve(dt * drainRate * modifier);
+	}
+	
+	private function set_value(v:Float):Float {
+		return this.value = v.clamp(0, 1);
 	}
 }
 
@@ -86,18 +87,21 @@ class Actor {
 	public var traits:IntMap<Float->Float>; // Traits that effect the way some motives change over time e.g. slobs get hungrier faster
 	public var experiences:Array<Action>; // Things the actor experienced since the last time it thought
 	
+	public var autonomous:Bool; // Whether to use the AI
+	
 	public inline function new(world:World) {
 		this.world = world;
 		motives = new Array<Motive>();
 		traits = new IntMap<Float->Float>();
 		experiences = new Array<Action>();
 		
-		motives.push(new Motive(Problem.LULZ, 50, -1.0, 1.0, "Entertainment"));
-		motives.push(new Motive(Problem.SELFESTEEM, 20, -1.0, 1.0, "Self Esteem"));
-		motives.push(new Motive(Problem.TIREDNESS, 20, 3.0, 1.0, "Tiredness"));
-		motives.push(new Motive(Problem.HUNGER, 50, 2.0, 1.0, "Hunger"));
-		motives.push(new Motive(Problem.HYGIENE, 30, 5.0, 1.0, "Hygiene"));
-		motives.push(new Motive(Problem.FUNDS, 5, -1.0, 1.0, "Funds"));
+		autonomous = true;
+		
+		motives.push(new Motive(Problem.LULZ, 0.50, 0.03, 1.0, "Boredom"));
+		motives.push(new Motive(Problem.TIREDNESS, 0.07, 0.01, 1.0, "Tiredness"));
+		motives.push(new Motive(Problem.HUNGER, 0.5, 0.04, 1.0, "Hunger"));
+		motives.push(new Motive(Problem.HYGIENE, 0.3, 0.06, 1.0, "Hygiene"));
+		motives.push(new Motive(Problem.BLADDER, 0.5, 0.07, 1.0, "Bladder"));
 	}
 	
 	public function act():Void {
@@ -109,6 +113,15 @@ class Actor {
 		}
 		experiences = new Array<Action>();
 	}
+	
+	public function step(dt:Float):Void {
+		for (motive in motives) {
+			motive.update(dt);
+		}
+		
+		// TODO if autonomous then do something
+		// TODO create probability distribution, or always choose best option, or maybe use min/max triggers
+	}
 }
 
 class World {
@@ -116,19 +129,21 @@ class World {
 	
 	public var actor:Actor;
 	
+	public var clock:FlipClock;
+	
 	public var livesRuined:Int;
 	public var feelingsHurt:Int;
 	
-	public var date:Date;
-	public var minutes:Float;
+	public var minutes(default, set):Float;
+	public var lastUpdateMinutes:Float;
 	
 	public var actions:Array<Action>;
 	
 	public inline function new() {
 		livesRuined = 0;
 		feelingsHurt = 0;
-		date = Date.now();
 		minutes = 0;
+		lastUpdateMinutes = 0;
 		
 		actor = new Actor(this);
 		
@@ -137,16 +152,22 @@ class World {
 		context = new GenericStack<Location>();
 	}
 	
-	public function update(dt:Float):Void {		
-		// Step the date from the start time to the current time passed
-		date = DateTools.delta(date, minutes);
+	public function update(dt:Float):Void {
+		actor.step(dt);
+	}
+	
+	public function set_minutes(min:Float):Float {
+		if(clock != null) {
+			clock.setTime(min * 60);
+		}
+		return this.minutes = min;
 	}
 }
 
 class Main {
 	public var world:World;
-	public var clock:FlipClock;
 	public var graphs:IntMap<NeedGraph>;
+	public var gameOver:Bool;
 	
     private static function main():Void {
 		new Main();
@@ -161,38 +182,31 @@ class Main {
 		world.actor.experiences.push(action);
 		world.actor.act();
 		world.minutes += action.duration;
-		clock.setTime(clock.getTime() + action.duration);
 		
 		for (effect in action.effects) {
 			var graph = graphs.get(effect.problem);
-			graph.addData( { time: world.minutes, value: world.actor.motives[effect.problem].value } );
+			graph.addData( { time: world.minutes, value: world.actor.motives[effect.problem].value }, world.minutes );
 		}
 	}
 	
 	private inline function flail():Void {
-		Terminal.insert(NullActions.unrecognizedCommand.randomElement());
+		Terminal.echo(NullActions.unrecognizedCommand.randomElement(), {});
 	}
 	
 	private inline function onWindowLoaded():Void {
-		// Get save data, create a list of saves which will either be a time, or else a "new game" option
-		var len:Int = LocalStorage.length;
-		for (i in 0...len) {
-			var saveName:String = LocalStorage.key(i);
-		}
-		
-		//var g = new Generator();
-		//g.init(trainingData.get("us_forenames"), 6, 0.01);
-		//trace(g.serialize());
-		
-		// TODO initialize time and locations using saved data
-		clock = new FlipClock(Browser.document.getElementById("time"), {});
+		gameOver = false;
+
 		world = new World();
-		world.context.add(Locations.desk);
-		world.context.add(Locations.bed);
-		world.context.add(Locations.fridge);
-		world.context.add(Locations.shower);
+		world.clock = new FlipClock(Browser.document.getElementById("time"), { } );
+		world.clock.stop();
+		world.context.add(new Desk(world));
+		world.context.add(new Bed(world));
+		world.context.add(new Fridge(world));
+		world.context.add(new Shower(world));
+		world.context.add(new Toilet(world));
 		
 		generateActionButtons();
+		generateSettingsButtons();
 		
 		Terminal.push(function(command:String, terminal:Dynamic) {
 			var recognizedCommand:Bool = false;
@@ -207,7 +221,6 @@ class Main {
 					}
 					if (action.trigger.length != 0 && containsParts) {
 						recognizedCommand = true;
-						
 						handleAction(action);
 					}
 				}
@@ -222,13 +235,31 @@ class Main {
 			greetings: false,
 			name: '>'
 		} );
-		Terminal.insert("You have 24 hours...");
+		Terminal.echo("You have 24 hours...", {});
 		
 		graphs = new IntMap<NeedGraph>();
 		for (motive in world.actor.motives) {
-			var graph:NeedGraph = new NeedGraph(motive, [ { time: 0, value: motive.value }, { time: 1, value: motive.value } ], "#graphs", 200, 100);
+			var graph:NeedGraph = new NeedGraph(motive, [ { time: 0, value: motive.value } ], "#graphs", 200, 100);
 			graphs.set(motive.id, graph);
 		}
+		
+		var f = Browser.window.setInterval(function() {
+			world.minutes += 1;
+			world.update(1);
+			
+			for (graph in graphs) {				
+				for (motive in world.actor.motives) {
+					var graph:NeedGraph = graphs.get(motive.id);
+					graph.addData( { time: world.minutes, value: motive.value }, world.minutes );
+				}
+			}
+			
+			if (world.minutes >= 60 * 24) {
+				gameOver = true;
+				world.clock.stop();
+				Terminal.echo("Time's up. Better start looking for a job...", {});
+			}
+		}, 1000);
 	}
 	
 	private function generateActionButtons():Void {
@@ -250,6 +281,17 @@ class Main {
 			}
 		}
 	}
+	
+	private function generateSettingsButtons():Void {
+		var settings = Browser.document.getElementById("settings");
+		var btn = Browser.document.createElement("button");
+		var t = Browser.document.createTextNode("toggle AI");
+		btn.appendChild(t);
+		settings.appendChild(btn);
+		btn.onclick = function():Void {
+			world.actor.autonomous = !world.actor.autonomous;
+		};
+	}
 }
 
 typedef TimeData = {
@@ -257,14 +299,14 @@ typedef TimeData = {
 	var value:Float;
 }
 
-class NeedGraph {
+class NeedGraph {	
 	public var data:Array<TimeData>;
 	public var title:String;
 	public var width:Int;
 	public var height:Int;
 	
 	public var minY:Int = 0;
-	public var maxY:Int = 100;
+	public var maxY:Int = 1;
 	
 	public var x:Linear;
 	public var y:Linear;
@@ -294,7 +336,7 @@ class NeedGraph {
 		y = D3.scale.linear().range([height, 0]);
 		
 		x.domain(D3.extent(data, function(d:TimeData):Float { return d.time; }));
-		y.domain(D3.extent(data, function(d:TimeData):Float { return d.value; }));
+		y.domain([minY, maxY]);
 		
 		// Axes
 		xAxis = D3.svg.axis().scale(x).orient("bottom").ticks(4);
@@ -313,9 +355,8 @@ class NeedGraph {
 		svg.append("path").datum(data).attr("class", "line").attr("d", line);
 	}
 	
-	public function updateData():Void {
-		x.domain(D3.extent(data, function(d:TimeData):Float { return d.time; }));
-		y.domain(D3.extent(data, function(d:TimeData):Float { return d.value; } ));
+	public function updateData(minutes:Float):Void {
+		x.domain([0, minutes]);
 		
 		line = D3.svg.line().x(function(d:TimeData) { return untyped x(d.time); } ).y(function(d:TimeData) { return untyped y(d.value); } );
 		
@@ -326,8 +367,8 @@ class NeedGraph {
 		sel.select(".yaxis").call(yAxis);
 	}
 	
-	public function addData(d:TimeData):Void {
+	public function addData(d:TimeData, worldMinutes:Float):Void {
 		data.push(d);
-		updateData();
+		updateData(worldMinutes);
 	}
 }

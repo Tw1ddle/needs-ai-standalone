@@ -6,14 +6,6 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
-var DateTools = function() { };
-DateTools.__name__ = true;
-DateTools.delta = function(d,t) {
-	var t1 = d.getTime() + t;
-	var d1 = new Date();
-	d1.setTime(t1);
-	return d1;
-};
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
 HxOverrides.substr = function(s,pos,len) {
@@ -25,93 +17,145 @@ HxOverrides.substr = function(s,pos,len) {
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
 };
+HxOverrides.iter = function(a) {
+	return { cur : 0, arr : a, hasNext : function() {
+		return this.cur < this.arr.length;
+	}, next : function() {
+		return this.arr[this.cur++];
+	}};
+};
+var Strings = function() { };
+Strings.__name__ = true;
 var Location = function(tag,description) {
 	this.tag = tag;
 	this.description = description;
 	this.actions = [];
 };
 Location.__name__ = true;
-var Desk = function() {
+var Desk = function(world) {
 	Location.call(this,"Desktop","The old rig, designed for a hacker on steroids");
-	this.actions.push(new Action(["computer"],2,[{ problem : 0, effect : function(world) {
-		terminal.insert("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
+	this.actions.push(new Action(["computer"],8,[{ problem : 0, effect : function(world1) {
+		terminal.echo("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
 	}}]));
 };
 Desk.__name__ = true;
 Desk.__super__ = Location;
 Desk.prototype = $extend(Location.prototype,{
 });
-var Fridge = function() {
+var Fridge = function(world) {
+	var _g = this;
 	Location.call(this,"Fridge","The new fridge");
-	this.actions.push(new Action(["eat"],2,[{ problem : 3, effect : function(world) {
-		terminal.insert("You shuffle to the fridge and grab the first thing you see.");
+	this.foods = [{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor) {
+		var _g1 = actor.motives[2];
+		_g1.set_value(_g1.value - 0.2);
+		var _g2 = actor.motives[4];
+		_g2.set_value(_g2.value + 0.1);
+		var _g3 = actor.motives[3];
+		_g3.set_value(_g3.value - 0.05);
+	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor1) {
+		var _g4 = actor1.motives[2];
+		_g4.set_value(_g4.value - 0.2);
+		var _g5 = actor1.motives[4];
+		_g5.set_value(_g5.value + 0.1);
+	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor2) {
+		var _g6 = actor2.motives[2];
+		_g6.set_value(_g6.value - 0.2);
+		var _g7 = actor2.motives[4];
+		_g7.set_value(_g7.value + 0.1);
+	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor3) {
+		var _g8 = actor3.motives[2];
+		_g8.set_value(_g8.value - 0.2);
+		var _g9 = actor3.motives[4];
+		_g9.set_value(_g9.value + 0.1);
+	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor4) {
+		var _g10 = actor4.motives[2];
+		_g10.set_value(_g10.value - 0.2);
+		var _g11 = actor4.motives[4];
+		_g11.set_value(_g11.value + 0.1);
+	}}];
+	this.actions.push(new Action(["eat"],10,[{ problem : 2, effect : function(world1) {
+		terminal.echo("You " + markov_util_ArrayExtensions.randomElement(Strings.walkingAdjective) + " to the fridge and grab the first thing you see... ");
+		var item = markov_util_ArrayExtensions.randomElement(_g.foods);
+		terminal.echo("It's a " + item.name + ". " + markov_util_ArrayExtensions.randomElement(item.descriptions) + ". You " + markov_util_ArrayExtensions.randomElement(Strings.eatingDescription) + ".");
+		item.effects(world1.actor);
 	}}]));
 };
 Fridge.__name__ = true;
 Fridge.__super__ = Location;
 Fridge.prototype = $extend(Location.prototype,{
 });
-var Bed = function() {
+var Bed = function(world) {
 	Location.call(this,"Bed","The old bed");
-	this.actions.push(new Action(["sleep"],2,[{ problem : 2, effect : function(world) {
-		terminal.insert("You settle down for a night of rest.");
+	this.actions.push(new Action(["sleep"],40,[{ problem : 1, effect : function(world1) {
+		terminal.echo("You settle down for forty winks.");
 	}}]));
 };
 Bed.__name__ = true;
 Bed.__super__ = Location;
 Bed.prototype = $extend(Location.prototype,{
 });
-var Shower = function() {
+var Shower = function(world) {
 	Location.call(this,"Shower","The shower.");
-	this.actions.push(new Action(["shower"],2,[{ problem : 4, effect : function(world) {
-		terminal.insert("You wash the filth off your body.");
+	this.actions.push(new Action(["shower"],15,[{ problem : 3, effect : function(world1) {
+		terminal.echo("You wash the filth off your body.");
 	}}]));
 };
 Shower.__name__ = true;
 Shower.__super__ = Location;
 Shower.prototype = $extend(Location.prototype,{
 });
-var Action = function(trigger,duration,effects) {
-	this.trigger = trigger;
-	this.duration = duration;
-	this.effects = effects;
+var Toilet = function(world) {
+	Location.call(this,"Toilet","The toilet.");
+	this.actions.push(new Action(["toilet"],5,[{ problem : 4, effect : function(world1) {
+		terminal.echo("You relieve yourself.");
+	}}]));
 };
-Action.__name__ = true;
-var Locations = function() { };
-Locations.__name__ = true;
+Toilet.__name__ = true;
+Toilet.__super__ = Location;
+Toilet.prototype = $extend(Location.prototype,{
+});
 var NullActions = function() { };
 NullActions.__name__ = true;
-var Motive = function(id,initial,rate,multiplier,tag,decayCurve) {
+var Motive = function(id,initialValue,drainRate,drainModifier,tag,drainCurve) {
 	if(tag == null) tag = "Unnamed Motive";
-	if(multiplier == null) multiplier = 1.0;
-	if(rate == null) rate = 1.0;
+	if(drainModifier == null) drainModifier = 1.0;
+	if(drainRate == null) drainRate = 0.01;
 	this.id = id;
-	this.value = initial;
-	this.rate = rate;
-	this.multiplier = multiplier;
+	this.set_value(initialValue);
+	this.drainRate = drainRate;
+	this.modifier = drainModifier;
 	this.tag = tag;
-	if(decayCurve != null) this.decayCurve = decayCurve; else this.decayCurve = function(v) {
+	if(drainCurve != null) this.drainCurve = drainCurve; else this.drainCurve = function(v) {
 		return v;
 	};
 };
 Motive.__name__ = true;
 Motive.prototype = {
 	update: function(dt) {
-		this.value += this.decayCurve(this.value) * dt * this.rate * this.multiplier;
-		this.value = markov_util_FloatExtensions.clamp(this.value,0,100);
+		var _g = this;
+		_g.set_value(_g.value + this.drainCurve(dt * this.drainRate * this.modifier));
+	}
+	,set_value: function(v) {
+		return v < 0?this.value = 0:v > 1?this.value = 1:this.value = v;
 	}
 };
+var Action = function(trigger,duration,effects) {
+	this.trigger = trigger;
+	this.duration = duration;
+	this.effects = effects;
+};
+Action.__name__ = true;
 var Actor = function(world) {
 	this.world = world;
 	this.motives = [];
 	this.traits = new haxe_ds_IntMap();
 	this.experiences = [];
-	this.motives.push(new Motive(0,50,-1.0,1.0,"Entertainment"));
-	this.motives.push(new Motive(1,20,-1.0,1.0,"Self Esteem"));
-	this.motives.push(new Motive(2,20,3.0,1.0,"Tiredness"));
-	this.motives.push(new Motive(3,50,2.0,1.0,"Hunger"));
-	this.motives.push(new Motive(4,30,5.0,1.0,"Hygiene"));
-	this.motives.push(new Motive(5,5,-1.0,1.0,"Funds"));
+	this.autonomous = true;
+	this.motives.push(new Motive(0,0.50,0.03,1.0,"Boredom"));
+	this.motives.push(new Motive(1,0.07,0.01,1.0,"Tiredness"));
+	this.motives.push(new Motive(2,0.5,0.04,1.0,"Hunger"));
+	this.motives.push(new Motive(3,0.3,0.06,1.0,"Hygiene"));
+	this.motives.push(new Motive(4,0.5,0.07,1.0,"Bladder"));
 };
 Actor.__name__ = true;
 Actor.prototype = {
@@ -132,12 +176,21 @@ Actor.prototype = {
 		}
 		this.experiences = [];
 	}
+	,step: function(dt) {
+		var _g = 0;
+		var _g1 = this.motives;
+		while(_g < _g1.length) {
+			var motive = _g1[_g];
+			++_g;
+			motive.update(dt);
+		}
+	}
 };
 var World = function() {
 	this.livesRuined = 0;
 	this.feelingsHurt = 0;
-	this.date = new Date();
-	this.minutes = 0;
+	this.set_minutes(0);
+	this.lastUpdateMinutes = 0;
 	this.actor = new Actor(this);
 	this.actions = [];
 	this.context = new haxe_ds_GenericStack();
@@ -145,7 +198,11 @@ var World = function() {
 World.__name__ = true;
 World.prototype = {
 	update: function(dt) {
-		this.date = DateTools.delta(this.date,this.minutes);
+		this.actor.step(dt);
+	}
+	,set_minutes: function(min) {
+		if(this.clock != null) this.clock.setTime(min * 60);
+		return this.minutes = min;
 	}
 };
 var Main = function() {
@@ -159,45 +216,43 @@ Main.prototype = {
 	handleAction: function(action) {
 		this.world.actor.experiences.push(action);
 		this.world.actor.act();
-		this.world.minutes += action.duration;
-		this.clock.setTime(this.clock.getTime() + action.duration);
-		var _g = 0;
-		var _g1 = action.effects;
-		while(_g < _g1.length) {
-			var effect = _g1[_g];
-			++_g;
+		var _g = this.world;
+		_g.set_minutes(_g.minutes + action.duration);
+		var _g1 = 0;
+		var _g11 = action.effects;
+		while(_g1 < _g11.length) {
+			var effect = _g11[_g1];
+			++_g1;
 			var graph = this.graphs.h[effect.problem];
-			graph.addData({ time : this.world.minutes, value : this.world.actor.motives[effect.problem].value});
+			graph.addData({ time : this.world.minutes, value : this.world.actor.motives[effect.problem].value},this.world.minutes);
 		}
 	}
 	,flail: function() {
-		terminal.insert(markov_util_ArrayExtensions.randomElement(NullActions.unrecognizedCommand));
+		terminal.echo(markov_util_ArrayExtensions.randomElement(NullActions.unrecognizedCommand),{ });
 	}
 	,onWindowLoaded: function() {
 		var _g = this;
-		var len = localStorage.$length;
-		var _g1 = 0;
-		while(_g1 < len) {
-			var i = _g1++;
-			var saveName = localStorage.key(i);
-		}
-		this.clock = new FlipClock.Factory(window.document.getElementById("time"),{ });
+		this.gameOver = false;
 		this.world = new World();
-		this.world.context.add(Locations.desk);
-		this.world.context.add(Locations.bed);
-		this.world.context.add(Locations.fridge);
-		this.world.context.add(Locations.shower);
+		this.world.clock = new FlipClock.Factory(window.document.getElementById("time"),{ });
+		this.world.clock.stop();
+		this.world.context.add(new Desk(this.world));
+		this.world.context.add(new Bed(this.world));
+		this.world.context.add(new Fridge(this.world));
+		this.world.context.add(new Shower(this.world));
+		this.world.context.add(new Toilet(this.world));
 		this.generateActionButtons();
+		this.generateSettingsButtons();
 		terminal.push(function(command,terminal) {
 			var recognizedCommand = false;
 			var $it0 = _g.world.context.iterator();
 			while( $it0.hasNext() ) {
 				var location = $it0.next();
-				var _g11 = 0;
-				var _g2 = location.actions;
-				while(_g11 < _g2.length) {
-					var action = _g2[_g11];
-					++_g11;
+				var _g12 = 0;
+				var _g21 = location.actions;
+				while(_g12 < _g21.length) {
+					var action = _g21[_g12];
+					++_g12;
 					var containsParts = true;
 					var _g3 = 0;
 					var _g4 = action.trigger;
@@ -215,19 +270,41 @@ Main.prototype = {
 					}
 				}
 			}
-			if(!recognizedCommand && command.length != 0) terminal.insert(markov_util_ArrayExtensions.randomElement(NullActions.unrecognizedCommand));
+			if(!recognizedCommand && command.length != 0) terminal.echo(markov_util_ArrayExtensions.randomElement(NullActions.unrecognizedCommand),{ });
 			_g.generateActionButtons();
 		},{ greetings : false, name : ">"});
-		terminal.insert("You have 24 hours...");
+		terminal.echo("You have 24 hours...",{ });
 		this.graphs = new haxe_ds_IntMap();
 		var _g5 = 0;
-		var _g12 = this.world.actor.motives;
-		while(_g5 < _g12.length) {
-			var motive = _g12[_g5];
+		var _g13 = this.world.actor.motives;
+		while(_g5 < _g13.length) {
+			var motive1 = _g13[_g5];
 			++_g5;
-			var graph = new NeedGraph(motive,[{ time : 0, value : motive.value},{ time : 1, value : motive.value}],"#graphs",200,100);
-			this.graphs.h[motive.id] = graph;
+			var graph2 = new NeedGraph(motive1,[{ time : 0, value : motive1.value}],"#graphs",200,100);
+			this.graphs.h[motive1.id] = graph2;
 		}
+		var f = window.setInterval(function() {
+			var _g1 = _g.world;
+			_g1.set_minutes(_g1.minutes + 1);
+			_g.world.update(1);
+			var $it1 = _g.graphs.iterator();
+			while( $it1.hasNext() ) {
+				var graph = $it1.next();
+				var _g11 = 0;
+				var _g2 = _g.world.actor.motives;
+				while(_g11 < _g2.length) {
+					var motive = _g2[_g11];
+					++_g11;
+					var graph1 = _g.graphs.h[motive.id];
+					graph1.addData({ time : _g.world.minutes, value : motive.value},_g.world.minutes);
+				}
+			}
+			if(_g.world.minutes >= 1440) {
+				_g.gameOver = true;
+				_g.world.clock.stop();
+				terminal.echo("Time's up. Better start looking for a job...",{ });
+			}
+		},1000);
 	}
 	,generateActionButtons: function() {
 		var _g2 = this;
@@ -254,9 +331,20 @@ Main.prototype = {
 			}
 		}
 	}
+	,generateSettingsButtons: function() {
+		var _g = this;
+		var settings = window.document.getElementById("settings");
+		var btn = window.document.createElement("button");
+		var t = window.document.createTextNode("toggle AI");
+		btn.appendChild(t);
+		settings.appendChild(btn);
+		btn.onclick = function() {
+			_g.world.actor.autonomous = !_g.world.actor.autonomous;
+		};
+	}
 };
 var NeedGraph = function(need,data,elementId,width,height) {
-	this.maxY = 100;
+	this.maxY = 1;
 	this.minY = 0;
 	var _g = this;
 	this.data = data;
@@ -274,15 +362,13 @@ var NeedGraph = function(need,data,elementId,width,height) {
 	this.x.domain(d3.extent(data,function(d) {
 		return d.time;
 	}));
-	this.y.domain(d3.extent(data,function(d1) {
-		return d1.value;
-	}));
+	this.y.domain([this.minY,this.maxY]);
 	this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").ticks(4);
 	this.yAxis = d3.svg.axis().scale(this.y).orient("left").ticks(4);
-	this.line = d3.svg.line().x(function(d2) {
-		return _g.x(d2.time);
-	}).y(function(d3) {
-		return _g.y(d3.value);
+	this.line = d3.svg.line().x(function(d1) {
+		return _g.x(d1.time);
+	}).y(function(d2) {
+		return _g.y(d2.value);
 	});
 	this.svg = d3.select(elementId).append("svg").attr("class",this.graphId).attr("width",width + margin_left + margin_right).attr("height",height + margin_top + margin_bottom).append("g").attr("transform","translate(" + margin_left + "," + margin_top + ")");
 	this.svg.append("g").attr("class","xaxis").attr("transform","translate(0," + height + ")").call(this.xAxis);
@@ -292,27 +378,22 @@ var NeedGraph = function(need,data,elementId,width,height) {
 };
 NeedGraph.__name__ = true;
 NeedGraph.prototype = {
-	updateData: function() {
+	updateData: function(minutes) {
 		var _g = this;
-		this.x.domain(d3.extent(this.data,function(d) {
-			return d.time;
-		}));
-		this.y.domain(d3.extent(this.data,function(d1) {
-			return d1.value;
-		}));
-		this.line = d3.svg.line().x(function(d2) {
-			return _g.x(d2.time);
-		}).y(function(d3) {
-			return _g.y(d3.value);
+		this.x.domain([0,minutes]);
+		this.line = d3.svg.line().x(function(d) {
+			return _g.x(d.time);
+		}).y(function(d1) {
+			return _g.y(d1.value);
 		});
 		var sel = d3.select("." + this.graphId).transition();
 		sel.select(".line").attr("d",this.line);
 		sel.select(".xaxis").call(this.xAxis);
 		sel.select(".yaxis").call(this.yAxis);
 	}
-	,addData: function(d) {
+	,addData: function(d,worldMinutes) {
 		this.data.push(d);
-		this.updateData();
+		this.updateData(worldMinutes);
 	}
 };
 Math.__name__ = true;
@@ -356,6 +437,23 @@ var haxe_ds_IntMap = function() {
 };
 haxe_ds_IntMap.__name__ = true;
 haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
+haxe_ds_IntMap.prototype = {
+	keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key | 0);
+		}
+		return HxOverrides.iter(a);
+	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref[i];
+		}};
+	}
+};
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
 	this.val = val;
@@ -569,11 +667,8 @@ var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 String.__name__ = true;
 Array.__name__ = true;
-Date.__name__ = ["Date"];
-Locations.desk = new Desk();
-Locations.fridge = new Fridge();
-Locations.bed = new Bed();
-Locations.shower = new Shower();
+Strings.walkingAdjective = ["shuffle","waddle","dodder","shamble","lurch","stumble","reel","stagger"];
+Strings.eatingDescription = ["wolf it down","gobble it greedily","feast on it","voraciously scarf it down"];
 NullActions.unrecognizedCommand = ["You flail uselessly."];
 js_d3__$D3_InitPriority.important = "important";
 Main.main();
