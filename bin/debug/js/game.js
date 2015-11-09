@@ -34,7 +34,7 @@ var Location = function(tag,description) {
 Location.__name__ = true;
 var Desk = function(world) {
 	Location.call(this,"Desktop","The old rig, designed for a hacker on steroids");
-	this.actions.push(new Action(["computer"],8,[{ problem : 0, effect : function(world1) {
+	this.actions.push(new ai_Action(0,["computer"],8,[{ id : 0, effect : function(world1) {
 		terminal.echo("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
 	}}]));
 };
@@ -46,37 +46,37 @@ var Fridge = function(world) {
 	var _g = this;
 	Location.call(this,"Fridge","The new fridge");
 	this.foods = [{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor) {
-		var _g1 = actor.motives[2];
+		var _g1 = actor.needs[2];
 		_g1.set_value(_g1.value - 0.2);
-		var _g2 = actor.motives[4];
+		var _g2 = actor.needs[4];
 		_g2.set_value(_g2.value + 0.1);
-		var _g3 = actor.motives[3];
+		var _g3 = actor.needs[3];
 		_g3.set_value(_g3.value - 0.05);
 	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor1) {
-		var _g4 = actor1.motives[2];
+		var _g4 = actor1.needs[2];
 		_g4.set_value(_g4.value - 0.2);
-		var _g5 = actor1.motives[4];
+		var _g5 = actor1.needs[4];
 		_g5.set_value(_g5.value + 0.1);
 	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor2) {
-		var _g6 = actor2.motives[2];
+		var _g6 = actor2.needs[2];
 		_g6.set_value(_g6.value - 0.2);
-		var _g7 = actor2.motives[4];
+		var _g7 = actor2.needs[4];
 		_g7.set_value(_g7.value + 0.1);
 	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor3) {
-		var _g8 = actor3.motives[2];
+		var _g8 = actor3.needs[2];
 		_g8.set_value(_g8.value - 0.2);
-		var _g9 = actor3.motives[4];
+		var _g9 = actor3.needs[4];
 		_g9.set_value(_g9.value + 0.1);
 	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor4) {
-		var _g10 = actor4.motives[2];
+		var _g10 = actor4.needs[2];
 		_g10.set_value(_g10.value - 0.2);
-		var _g11 = actor4.motives[4];
+		var _g11 = actor4.needs[4];
 		_g11.set_value(_g11.value + 0.1);
 	}}];
-	this.actions.push(new Action(["eat"],10,[{ problem : 2, effect : function(world1) {
-		terminal.echo("You " + markov_util_ArrayExtensions.randomElement(Strings.walkingAdjective) + " to the fridge and grab the first thing you see... ");
-		var item = markov_util_ArrayExtensions.randomElement(_g.foods);
-		terminal.echo("It's a " + item.name + ". " + markov_util_ArrayExtensions.randomElement(item.descriptions) + ". You " + markov_util_ArrayExtensions.randomElement(Strings.eatingDescription) + ".");
+	this.actions.push(new ai_Action(2,["eat"],10,[{ id : 2, effect : function(world1) {
+		terminal.echo("You " + util_ArrayExtensions.randomElement(Strings.walkingAdjective) + " to the fridge and grab the first thing you see... ");
+		var item = util_ArrayExtensions.randomElement(_g.foods);
+		terminal.echo("It's a " + item.name + ". " + util_ArrayExtensions.randomElement(item.descriptions) + ". You " + util_ArrayExtensions.randomElement(Strings.eatingDescription) + ".");
 		item.effects(world1.actor);
 	}}]));
 };
@@ -86,7 +86,7 @@ Fridge.prototype = $extend(Location.prototype,{
 });
 var Bed = function(world) {
 	Location.call(this,"Bed","The old bed");
-	this.actions.push(new Action(["sleep"],40,[{ problem : 1, effect : function(world1) {
+	this.actions.push(new ai_Action(1,["sleep"],40,[{ id : 1, effect : function(world1) {
 		terminal.echo("You settle down for forty winks.");
 	}}]));
 };
@@ -96,7 +96,7 @@ Bed.prototype = $extend(Location.prototype,{
 });
 var Shower = function(world) {
 	Location.call(this,"Shower","The shower.");
-	this.actions.push(new Action(["shower"],15,[{ problem : 3, effect : function(world1) {
+	this.actions.push(new ai_Action(3,["shower"],15,[{ id : 3, effect : function(world1) {
 		terminal.echo("You wash the filth off your body.");
 	}}]));
 };
@@ -106,7 +106,7 @@ Shower.prototype = $extend(Location.prototype,{
 });
 var Toilet = function(world) {
 	Location.call(this,"Toilet","The toilet.");
-	this.actions.push(new Action(["toilet"],5,[{ problem : 4, effect : function(world1) {
+	this.actions.push(new ai_Action(4,["toilet"],5,[{ id : 4, effect : function(world1) {
 		terminal.echo("You relieve yourself.");
 	}}]));
 };
@@ -114,97 +114,6 @@ Toilet.__name__ = true;
 Toilet.__super__ = Location;
 Toilet.prototype = $extend(Location.prototype,{
 });
-var NullActions = function() { };
-NullActions.__name__ = true;
-var Motive = function(id,initialValue,drainRate,drainModifier,tag,drainCurve) {
-	if(tag == null) tag = "Unnamed Motive";
-	if(drainModifier == null) drainModifier = 1.0;
-	if(drainRate == null) drainRate = 0.01;
-	this.id = id;
-	this.set_value(initialValue);
-	this.drainRate = drainRate;
-	this.modifier = drainModifier;
-	this.tag = tag;
-	if(drainCurve != null) this.drainCurve = drainCurve; else this.drainCurve = function(v) {
-		return v;
-	};
-};
-Motive.__name__ = true;
-Motive.prototype = {
-	update: function(dt) {
-		var _g = this;
-		_g.set_value(_g.value + this.drainCurve(dt * this.drainRate * this.modifier));
-	}
-	,set_value: function(v) {
-		return v < 0?this.value = 0:v > 1?this.value = 1:this.value = v;
-	}
-};
-var Action = function(trigger,duration,effects) {
-	this.trigger = trigger;
-	this.duration = duration;
-	this.effects = effects;
-};
-Action.__name__ = true;
-var Actor = function(world) {
-	this.world = world;
-	this.motives = [];
-	this.traits = new haxe_ds_IntMap();
-	this.experiences = [];
-	this.autonomous = true;
-	this.motives.push(new Motive(0,0.50,0.03,1.0,"Boredom"));
-	this.motives.push(new Motive(1,0.07,0.01,1.0,"Tiredness"));
-	this.motives.push(new Motive(2,0.5,0.04,1.0,"Hunger"));
-	this.motives.push(new Motive(3,0.3,0.06,1.0,"Hygiene"));
-	this.motives.push(new Motive(4,0.5,0.07,1.0,"Bladder"));
-};
-Actor.__name__ = true;
-Actor.prototype = {
-	act: function() {
-		var _g = 0;
-		var _g1 = this.experiences;
-		while(_g < _g1.length) {
-			var action = _g1[_g];
-			++_g;
-			var _g2 = 0;
-			var _g3 = action.effects;
-			while(_g2 < _g3.length) {
-				var effect = _g3[_g2];
-				++_g2;
-				effect.effect(this.world);
-				this.motives[effect.problem].update(action.duration);
-			}
-		}
-		this.experiences = [];
-	}
-	,step: function(dt) {
-		var _g = 0;
-		var _g1 = this.motives;
-		while(_g < _g1.length) {
-			var motive = _g1[_g];
-			++_g;
-			motive.update(dt);
-		}
-	}
-};
-var World = function() {
-	this.livesRuined = 0;
-	this.feelingsHurt = 0;
-	this.set_minutes(0);
-	this.lastUpdateMinutes = 0;
-	this.actor = new Actor(this);
-	this.actions = [];
-	this.context = new haxe_ds_GenericStack();
-};
-World.__name__ = true;
-World.prototype = {
-	update: function(dt) {
-		this.actor.step(dt);
-	}
-	,set_minutes: function(min) {
-		if(this.clock != null) this.clock.setTime(min * 60);
-		return this.minutes = min;
-	}
-};
 var Main = function() {
 	window.onload = $bind(this,this.onWindowLoaded);
 };
@@ -213,7 +122,38 @@ Main.main = function() {
 	new Main();
 };
 Main.prototype = {
-	handleAction: function(action) {
+	onWindowLoaded: function() {
+		this.gameover = false;
+		this.world = new World();
+		this.generateTerminal();
+		this.generateActionButtons();
+		this.generateSettingsButtons();
+		this.generateGraphs();
+		window.setInterval($bind(this,this.update),1000);
+	}
+	,update: function() {
+		var _g = this.world;
+		_g.set_minutes(_g.minutes + 1);
+		this.world.update(1);
+		var $it0 = this.graphs.iterator();
+		while( $it0.hasNext() ) {
+			var graph = $it0.next();
+			var _g1 = 0;
+			var _g11 = this.world.actor.needs;
+			while(_g1 < _g11.length) {
+				var motive = _g11[_g1];
+				++_g1;
+				var graph1 = this.graphs.h[motive.id];
+				graph1.addData({ time : this.world.minutes, value : motive.value},this.world.minutes);
+			}
+		}
+		if(this.world.minutes >= 1440) {
+			this.gameover = true;
+			this.world.clock.stop();
+			terminal.echo("Time's up. Better start looking for a job...");
+		}
+	}
+	,handleAction: function(action) {
 		this.world.actor.experiences.push(action);
 		this.world.actor.act();
 		var _g = this.world;
@@ -223,36 +163,22 @@ Main.prototype = {
 		while(_g1 < _g11.length) {
 			var effect = _g11[_g1];
 			++_g1;
-			var graph = this.graphs.h[effect.problem];
-			graph.addData({ time : this.world.minutes, value : this.world.actor.motives[effect.problem].value},this.world.minutes);
+			var graph = this.graphs.h[effect.id];
+			graph.addData({ time : this.world.minutes, value : this.world.actor.needs[effect.id].value},this.world.minutes);
 		}
 	}
-	,flail: function() {
-		terminal.echo(markov_util_ArrayExtensions.randomElement(NullActions.unrecognizedCommand),{ });
-	}
-	,onWindowLoaded: function() {
+	,generateTerminal: function() {
 		var _g = this;
-		this.gameOver = false;
-		this.world = new World();
-		this.world.clock = new FlipClock.Factory(window.document.getElementById("time"),{ });
-		this.world.clock.stop();
-		this.world.context.add(new Desk(this.world));
-		this.world.context.add(new Bed(this.world));
-		this.world.context.add(new Fridge(this.world));
-		this.world.context.add(new Shower(this.world));
-		this.world.context.add(new Toilet(this.world));
-		this.generateActionButtons();
-		this.generateSettingsButtons();
 		terminal.push(function(command,terminal) {
 			var recognizedCommand = false;
 			var $it0 = _g.world.context.iterator();
 			while( $it0.hasNext() ) {
 				var location = $it0.next();
-				var _g12 = 0;
-				var _g21 = location.actions;
-				while(_g12 < _g21.length) {
-					var action = _g21[_g12];
-					++_g12;
+				var _g1 = 0;
+				var _g2 = location.actions;
+				while(_g1 < _g2.length) {
+					var action = _g2[_g1];
+					++_g1;
 					var containsParts = true;
 					var _g3 = 0;
 					var _g4 = action.trigger;
@@ -270,41 +196,9 @@ Main.prototype = {
 					}
 				}
 			}
-			if(!recognizedCommand && command.length != 0) terminal.echo(markov_util_ArrayExtensions.randomElement(NullActions.unrecognizedCommand),{ });
-			_g.generateActionButtons();
+			if(!recognizedCommand && command.length != 0) terminal.echo(util_ArrayExtensions.randomElement(Strings.unrecognizedCommand));
 		},{ greetings : false, name : ">"});
-		terminal.echo("You have 24 hours...",{ });
-		this.graphs = new haxe_ds_IntMap();
-		var _g5 = 0;
-		var _g13 = this.world.actor.motives;
-		while(_g5 < _g13.length) {
-			var motive1 = _g13[_g5];
-			++_g5;
-			var graph2 = new NeedGraph(motive1,[{ time : 0, value : motive1.value}],"#graphs",200,100);
-			this.graphs.h[motive1.id] = graph2;
-		}
-		var f = window.setInterval(function() {
-			var _g1 = _g.world;
-			_g1.set_minutes(_g1.minutes + 1);
-			_g.world.update(1);
-			var $it1 = _g.graphs.iterator();
-			while( $it1.hasNext() ) {
-				var graph = $it1.next();
-				var _g11 = 0;
-				var _g2 = _g.world.actor.motives;
-				while(_g11 < _g2.length) {
-					var motive = _g2[_g11];
-					++_g11;
-					var graph1 = _g.graphs.h[motive.id];
-					graph1.addData({ time : _g.world.minutes, value : motive.value},_g.world.minutes);
-				}
-			}
-			if(_g.world.minutes >= 1440) {
-				_g.gameOver = true;
-				_g.world.clock.stop();
-				terminal.echo("Time's up. Better start looking for a job...",{ });
-			}
-		},1000);
+		terminal.echo("You have 24 hours...");
 	}
 	,generateActionButtons: function() {
 		var _g2 = this;
@@ -342,7 +236,21 @@ Main.prototype = {
 			_g.world.actor.autonomous = !_g.world.actor.autonomous;
 		};
 	}
+	,generateSliders: function() {
+	}
+	,generateGraphs: function() {
+		this.graphs = new haxe_ds_IntMap();
+		var _g = 0;
+		var _g1 = this.world.actor.needs;
+		while(_g < _g1.length) {
+			var motive = _g1[_g];
+			++_g;
+			var graph = new NeedGraph(motive,[{ time : 0, value : motive.value}],"#graphs",200,100);
+			this.graphs.h[motive.id] = graph;
+		}
+	}
 };
+Math.__name__ = true;
 var NeedGraph = function(need,data,elementId,width,height) {
 	this.maxY = 1;
 	this.minY = 0;
@@ -396,7 +304,6 @@ NeedGraph.prototype = {
 		this.updateData(worldMinutes);
 	}
 };
-Math.__name__ = true;
 var Std = function() { };
 Std.__name__ = true;
 Std.random = function(x) {
@@ -406,6 +313,104 @@ var StringTools = function() { };
 StringTools.__name__ = true;
 StringTools.replace = function(s,sub,by) {
 	return s.split(sub).join(by);
+};
+var World = function() {
+	this.livesRuined = 0;
+	this.feelingsHurt = 0;
+	this.set_minutes(0);
+	this.lastUpdateMinutes = 0;
+	var needs = [];
+	needs.push(new ai_Need(0,0.50,0.03,1.0,null,"Boredom"));
+	needs.push(new ai_Need(1,0.07,0.01,1.0,null,"Tiredness"));
+	needs.push(new ai_Need(2,0.5,0.04,1.0,null,"Hunger"));
+	needs.push(new ai_Need(3,0.3,0.06,1.0,null,"Hygiene"));
+	needs.push(new ai_Need(4,0.5,0.07,1.0,null,"Bladder"));
+	this.actor = new ai_Brain(this,needs);
+	this.actions = [];
+	this.context = new haxe_ds_GenericStack();
+	this.context.add(new Desk(this));
+	this.context.add(new Bed(this));
+	this.context.add(new Fridge(this));
+	this.context.add(new Shower(this));
+	this.context.add(new Toilet(this));
+	this.clock = new FlipClock.Factory(window.document.getElementById("time"));
+	this.clock.stop();
+};
+World.__name__ = true;
+World.prototype = {
+	update: function(dt) {
+		this.actor.step(dt);
+	}
+	,set_minutes: function(min) {
+		if(this.clock != null) this.clock.setTime(min * 60);
+		return this.minutes = min;
+	}
+};
+var ai_Action = function(id,trigger,duration,effects) {
+	this.id = id;
+	this.trigger = trigger;
+	this.duration = duration;
+	this.effects = effects;
+};
+ai_Action.__name__ = true;
+var ai_Brain = function(world,needs) {
+	this.world = world;
+	this.needs = needs;
+	this.needTraits = new haxe_ds_IntMap();
+	this.experiences = [];
+	this.autonomous = true;
+};
+ai_Brain.__name__ = true;
+ai_Brain.prototype = {
+	act: function() {
+		var _g = 0;
+		var _g1 = this.experiences;
+		while(_g < _g1.length) {
+			var action = _g1[_g];
+			++_g;
+			var _g2 = 0;
+			var _g3 = action.effects;
+			while(_g2 < _g3.length) {
+				var effect = _g3[_g2];
+				++_g2;
+				effect.effect(this.world);
+				this.needs[effect.id].update(action.duration);
+			}
+		}
+		this.experiences = [];
+	}
+	,step: function(dt) {
+		var _g = 0;
+		var _g1 = this.needs;
+		while(_g < _g1.length) {
+			var motive = _g1[_g];
+			++_g;
+			motive.update(dt);
+		}
+	}
+};
+var ai_Need = function(id,initialValue,growthRate,drainModifier,growthCurve,tag) {
+	if(tag == null) tag = "Unnamed Motive";
+	if(drainModifier == null) drainModifier = 1.0;
+	if(growthRate == null) growthRate = 0.01;
+	this.id = id;
+	this.set_value(initialValue);
+	this.growthRate = growthRate;
+	this.modifier = drainModifier;
+	this.tag = tag;
+	if(growthCurve != null) this.growthCurve = growthCurve; else this.growthCurve = function(v) {
+		return v;
+	};
+};
+ai_Need.__name__ = true;
+ai_Need.prototype = {
+	update: function(dt) {
+		var _g = this;
+		_g.set_value(_g.value + this.growthCurve(dt * this.growthRate * this.modifier));
+	}
+	,set_value: function(v) {
+		return v < 0?this.value = 0:v > 1?this.value = 1:this.value = v;
+	}
 };
 var haxe_IMap = function() { };
 haxe_IMap.__name__ = true;
@@ -536,9 +541,9 @@ js_Boot.__string_rec = function(o,s) {
 };
 var js_d3__$D3_InitPriority = function() { };
 js_d3__$D3_InitPriority.__name__ = true;
-var markov_util_ArrayExtensions = function() { };
-markov_util_ArrayExtensions.__name__ = true;
-markov_util_ArrayExtensions.randomElementFromArrays = function(arrays) {
+var util_ArrayExtensions = function() { };
+util_ArrayExtensions.__name__ = true;
+util_ArrayExtensions.randomElementFromArrays = function(arrays) {
 	if(!(arrays != null && arrays.length != 0)) throw new js__$Boot_HaxeError("FAIL: arrays != null && arrays.length != 0");
 	var totalLength = 0;
 	var lengths = [];
@@ -553,16 +558,16 @@ markov_util_ArrayExtensions.randomElementFromArrays = function(arrays) {
 	var n = Math.random() * totalLength;
 	var i = 0;
 	while(i < lengths.length) {
-		if(n < lengths[i]) return markov_util_ArrayExtensions.randomElement(arrays[i]);
+		if(n < lengths[i]) return util_ArrayExtensions.randomElement(arrays[i]);
 		i++;
 	}
 	throw new js__$Boot_HaxeError("Failed to get random element");
 };
-markov_util_ArrayExtensions.randomElement = function(array) {
+util_ArrayExtensions.randomElement = function(array) {
 	if(!(array != null && array.length != 0)) throw new js__$Boot_HaxeError("FAIL: array != null && array.length != 0");
 	return array[Std.random(array.length)];
 };
-markov_util_ArrayExtensions.noNulls = function(array) {
+util_ArrayExtensions.noNulls = function(array) {
 	if(!(array != null)) throw new js__$Boot_HaxeError("FAIL: array != null");
 	var _g = 0;
 	while(_g < array.length) {
@@ -572,7 +577,7 @@ markov_util_ArrayExtensions.noNulls = function(array) {
 	}
 	return true;
 };
-markov_util_ArrayExtensions.binarySearchCmp = function(a,x,min,max,comparator) {
+util_ArrayExtensions.binarySearchCmp = function(a,x,min,max,comparator) {
 	if(!(a != null)) throw new js__$Boot_HaxeError("FAIL: a != null");
 	if(!(min >= 0 && min < a.length)) throw new js__$Boot_HaxeError("FAIL: min >= 0 && min < a.length");
 	if(!(max >= 0 && max < a.length)) throw new js__$Boot_HaxeError("FAIL: max >= 0 && max < a.length");
@@ -586,7 +591,7 @@ markov_util_ArrayExtensions.binarySearchCmp = function(a,x,min,max,comparator) {
 	}
 	if(low <= max && comparator(a[low],x) == 0) return low; else return ~low;
 };
-markov_util_ArrayExtensions.binarySearch = function(a,x,min,max) {
+util_ArrayExtensions.binarySearch = function(a,x,min,max) {
 	if(!(a != null)) throw new js__$Boot_HaxeError("FAIL: a != null");
 	if(!(min >= 0 && min < a.length)) throw new js__$Boot_HaxeError("FAIL: min >= 0 && min < a.length");
 	if(!(max >= 0 && max < a.length)) throw new js__$Boot_HaxeError("FAIL: max >= 0 && max < a.length");
@@ -599,54 +604,54 @@ markov_util_ArrayExtensions.binarySearch = function(a,x,min,max) {
 	}
 	if(low <= max && a[low] == x) return low; else return ~low;
 };
-var markov_util_FloatExtensions = function() { };
-markov_util_FloatExtensions.__name__ = true;
-markov_util_FloatExtensions.clamp = function(v,min,max) {
+var util_FloatExtensions = function() { };
+util_FloatExtensions.__name__ = true;
+util_FloatExtensions.clamp = function(v,min,max) {
 	if(v < min) return min; else if(v > max) return max; else return v;
 };
-markov_util_FloatExtensions.max = function(a,b) {
+util_FloatExtensions.max = function(a,b) {
 	if(a > b) return a; else return b;
 };
-markov_util_FloatExtensions.min = function(a,b) {
+util_FloatExtensions.min = function(a,b) {
 	if(a < b) return a; else return b;
 };
-markov_util_FloatExtensions.inRangeInclusive = function(p,x1,x2) {
+util_FloatExtensions.inRangeInclusive = function(p,x1,x2) {
 	return p >= Math.min(x1,x2) && p <= Math.max(x1,x2);
 };
-markov_util_FloatExtensions.inRangeExclusive = function(p,x1,x2) {
+util_FloatExtensions.inRangeExclusive = function(p,x1,x2) {
 	return p > Math.min(x1,x2) && p < Math.max(x1,x2);
 };
-markov_util_FloatExtensions.lerp = function(v,a,b) {
+util_FloatExtensions.lerp = function(v,a,b) {
 	return (b - a) * v + a;
 };
-markov_util_FloatExtensions.coslerp = function(v,a,b) {
+util_FloatExtensions.coslerp = function(v,a,b) {
 	var c = (1 - Math.cos(v * Math.PI)) / 2;
 	return a * (1 - c) + b * c;
 };
-markov_util_FloatExtensions.sign = function(x) {
+util_FloatExtensions.sign = function(x) {
 	if(x > 0) return 1; else if(x < 0) return -1; else return 0;
 };
-markov_util_FloatExtensions.fpart = function(x) {
+util_FloatExtensions.fpart = function(x) {
 	if(x < 0) return 1 - (x - Math.floor(x)); else return x - Math.floor(x);
 };
-markov_util_FloatExtensions.rfpart = function(x) {
+util_FloatExtensions.rfpart = function(x) {
 	return 1.0 - (x < 0?1 - (x - Math.floor(x)):x - Math.floor(x));
 };
-markov_util_FloatExtensions.wrap = function(x,lower,upper) {
+util_FloatExtensions.wrap = function(x,lower,upper) {
 	if(!(lower <= upper)) throw new js__$Boot_HaxeError("FAIL: lower <= upper");
 	var range = upper - lower + 1;
 	x = (x - lower) % range;
 	if(x < 0) return upper + 1 + x; else return lower + x;
 };
-var markov_util_StringExtensions = function() { };
-markov_util_StringExtensions.__name__ = true;
-markov_util_StringExtensions.reverse = function(s) {
+var util_StringExtensions = function() { };
+util_StringExtensions.__name__ = true;
+util_StringExtensions.reverse = function(s) {
 	if(!(s != null)) throw new js__$Boot_HaxeError("FAIL: s != null");
 	var arr = s.split("");
 	arr.reverse();
 	return arr.join("");
 };
-markov_util_StringExtensions.repeat = function(s,times) {
+util_StringExtensions.repeat = function(s,times) {
 	if(!(s != null)) throw new js__$Boot_HaxeError("FAIL: s != null");
 	if(!(times >= 1)) throw new js__$Boot_HaxeError("FAIL: times >= 1");
 	var output = "";
@@ -657,10 +662,10 @@ markov_util_StringExtensions.repeat = function(s,times) {
 	}
 	return output;
 };
-markov_util_StringExtensions.contains = function(s,substr) {
+util_StringExtensions.contains = function(s,substr) {
 	return s.indexOf(substr) >= 0;
 };
-markov_util_StringExtensions.capitalize = function(s) {
+util_StringExtensions.capitalize = function(s) {
 	return HxOverrides.substr(s,0,1).toUpperCase() + HxOverrides.substr(s,1,s.length - 1);
 };
 var $_, $fid = 0;
@@ -669,7 +674,7 @@ String.__name__ = true;
 Array.__name__ = true;
 Strings.walkingAdjective = ["shuffle","waddle","dodder","shamble","lurch","stumble","reel","stagger"];
 Strings.eatingDescription = ["wolf it down","gobble it greedily","feast on it","voraciously scarf it down"];
-NullActions.unrecognizedCommand = ["You flail uselessly."];
+Strings.unrecognizedCommand = ["You flail uselessly."];
 js_d3__$D3_InitPriority.important = "important";
 Main.main();
 })(typeof console != "undefined" ? console : {log:function(){}});

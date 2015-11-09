@@ -1,4 +1,4 @@
-package markov.util;
+package util;
 
 // Extension methods for floats
 class FloatExtensions {

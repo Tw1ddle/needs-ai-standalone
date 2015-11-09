@@ -1,4 +1,4 @@
-package markov.util;
+package util;
 
 import haxe.macro.Context;
 

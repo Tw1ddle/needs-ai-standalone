@@ -4,7 +4,7 @@ import js.Browser;
 
 @:native("FlipClock.Factory")
 extern class FlipClock {
-	public function new(element:Dynamic, options:Dynamic);
+	public function new(element:Dynamic, ?options:Dynamic);
 	
 	public var autoStart:Bool;
 	public var countdown:Bool;

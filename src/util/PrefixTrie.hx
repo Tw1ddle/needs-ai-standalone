@@ -1,6 +1,6 @@
-package markov.util;
+package util;
 
-using markov.util.StringExtensions;
+using util.StringExtensions;
 
 // Unoptimized prefix trie, see https://en.wikipedia.org/wiki/Trie
 class PrefixTrie {

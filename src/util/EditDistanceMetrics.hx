@@ -1,8 +1,8 @@
-package markov.util;
+package util;
 
 import haxe.ds.Vector;
 
-using markov.util.IntExtensions;
+using util.IntExtensions;
 
 // Algorithms for calculating the edit distances between strings
 class EditDistanceMetrics {

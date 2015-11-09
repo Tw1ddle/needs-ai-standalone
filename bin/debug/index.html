@@ -45,17 +45,28 @@
 			</div>
 		</section>
 		
-		<div id="graphs" class="stitched">
+		<div id="graphs_container" class="stitched">
+			<h2>Needs</h2>
+			<div id="graphs" class="container"></div>
 		</div>
 		
 		<div id="settings" class="stitched">
+			<h2>Settings</h2>
 			<div class="container">
-				<h3>AI Toggle</h3>
-				<div id="aitoggle" class="black"></div>
+				<h3>Toggle AI</h3>
+				<div id="toggleai" class="black"></div>
 			</div>
 			<div class="container">
 				<h3>Clock Speed</h3>
 				<div id="speed" class="red"></div>
+			</div>
+			<div class="container">
+				<h3>Strategy</h3>
+				<select id="strategy">
+					<option value="highest_needs" selected="selected">Highest Needs First</option>
+					<option value="true_random">True Random</option>
+					<option value="weighted_random">Weighted Random</option>
+				</select>
 			</div>
 		</div>
 		
