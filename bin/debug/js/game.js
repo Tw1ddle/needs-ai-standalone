@@ -34,7 +34,7 @@ var Location = function(tag,description) {
 Location.__name__ = true;
 var Desk = function(world) {
 	Location.call(this,"Desktop","The old rig, designed for a hacker on steroids");
-	this.actions.push(new ai_Action(0,["computer"],8,[{ id : 0, effect : function(world1) {
+	this.actions.push(new TriggerAction(0,["computer"],8,[{ id : 0, effect : function(world1) {
 		terminal.echo("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
 	}}]));
 };
@@ -45,39 +45,39 @@ Desk.prototype = $extend(Location.prototype,{
 var Fridge = function(world) {
 	var _g = this;
 	Location.call(this,"Fridge","The new fridge");
-	this.foods = [{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor) {
-		var _g1 = actor.needs[2];
+	this.foods = [{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain) {
+		var _g1 = brain.needs[2];
 		_g1.set_value(_g1.value - 0.2);
-		var _g2 = actor.needs[4];
+		var _g2 = brain.needs[4];
 		_g2.set_value(_g2.value + 0.1);
-		var _g3 = actor.needs[3];
+		var _g3 = brain.needs[3];
 		_g3.set_value(_g3.value - 0.05);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor1) {
-		var _g4 = actor1.needs[2];
+	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain1) {
+		var _g4 = brain1.needs[2];
 		_g4.set_value(_g4.value - 0.2);
-		var _g5 = actor1.needs[4];
+		var _g5 = brain1.needs[4];
 		_g5.set_value(_g5.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor2) {
-		var _g6 = actor2.needs[2];
+	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain2) {
+		var _g6 = brain2.needs[2];
 		_g6.set_value(_g6.value - 0.2);
-		var _g7 = actor2.needs[4];
+		var _g7 = brain2.needs[4];
 		_g7.set_value(_g7.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor3) {
-		var _g8 = actor3.needs[2];
+	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain3) {
+		var _g8 = brain3.needs[2];
 		_g8.set_value(_g8.value - 0.2);
-		var _g9 = actor3.needs[4];
+		var _g9 = brain3.needs[4];
 		_g9.set_value(_g9.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(actor4) {
-		var _g10 = actor4.needs[2];
+	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain4) {
+		var _g10 = brain4.needs[2];
 		_g10.set_value(_g10.value - 0.2);
-		var _g11 = actor4.needs[4];
+		var _g11 = brain4.needs[4];
 		_g11.set_value(_g11.value + 0.1);
 	}}];
-	this.actions.push(new ai_Action(2,["eat"],10,[{ id : 2, effect : function(world1) {
+	this.actions.push(new TriggerAction(2,["eat"],10,[{ id : 2, effect : function(world1) {
 		terminal.echo("You " + util_ArrayExtensions.randomElement(Strings.walkingAdjective) + " to the fridge and grab the first thing you see... ");
 		var item = util_ArrayExtensions.randomElement(_g.foods);
 		terminal.echo("It's a " + item.name + ". " + util_ArrayExtensions.randomElement(item.descriptions) + ". You " + util_ArrayExtensions.randomElement(Strings.eatingDescription) + ".");
-		item.effects(world1.actor);
+		item.effects(world1.agent.brain);
 	}}]));
 };
 Fridge.__name__ = true;
@@ -86,7 +86,7 @@ Fridge.prototype = $extend(Location.prototype,{
 });
 var Bed = function(world) {
 	Location.call(this,"Bed","The old bed");
-	this.actions.push(new ai_Action(1,["sleep"],40,[{ id : 1, effect : function(world1) {
+	this.actions.push(new TriggerAction(1,["sleep"],40,[{ id : 1, effect : function(world1) {
 		terminal.echo("You settle down for forty winks.");
 	}}]));
 };
@@ -96,7 +96,7 @@ Bed.prototype = $extend(Location.prototype,{
 });
 var Shower = function(world) {
 	Location.call(this,"Shower","The shower.");
-	this.actions.push(new ai_Action(3,["shower"],15,[{ id : 3, effect : function(world1) {
+	this.actions.push(new TriggerAction(3,["shower"],15,[{ id : 3, effect : function(world1) {
 		terminal.echo("You wash the filth off your body.");
 	}}]));
 };
@@ -106,13 +106,27 @@ Shower.prototype = $extend(Location.prototype,{
 });
 var Toilet = function(world) {
 	Location.call(this,"Toilet","The toilet.");
-	this.actions.push(new ai_Action(4,["toilet"],5,[{ id : 4, effect : function(world1) {
+	this.actions.push(new TriggerAction(4,["toilet"],5,[{ id : 4, effect : function(world1) {
 		terminal.echo("You relieve yourself.");
 	}}]));
 };
 Toilet.__name__ = true;
 Toilet.__super__ = Location;
 Toilet.prototype = $extend(Location.prototype,{
+});
+var ai_Action = function(id,duration,effects) {
+	this.id = id;
+	this.duration = duration;
+	this.effects = effects;
+};
+ai_Action.__name__ = true;
+var TriggerAction = function(id,trigger,duration,effects) {
+	ai_Action.call(this,id,duration,effects);
+	this.trigger = trigger;
+};
+TriggerAction.__name__ = true;
+TriggerAction.__super__ = ai_Action;
+TriggerAction.prototype = $extend(ai_Action.prototype,{
 });
 var Main = function() {
 	window.onload = $bind(this,this.onWindowLoaded);
@@ -129,7 +143,8 @@ Main.prototype = {
 		this.generateActionButtons();
 		this.generateSettingsButtons();
 		this.generateGraphs();
-		window.setInterval($bind(this,this.update),1000);
+		this.updateHandle = null;
+		this.set_updateInterval(1000);
 	}
 	,update: function() {
 		var _g = this.world;
@@ -139,7 +154,7 @@ Main.prototype = {
 		while( $it0.hasNext() ) {
 			var graph = $it0.next();
 			var _g1 = 0;
-			var _g11 = this.world.actor.needs;
+			var _g11 = this.world.agent.brain.needs;
 			while(_g1 < _g11.length) {
 				var motive = _g11[_g1];
 				++_g1;
@@ -154,8 +169,7 @@ Main.prototype = {
 		}
 	}
 	,handleAction: function(action) {
-		this.world.actor.experiences.push(action);
-		this.world.actor.act();
+		this.world.agent.act(action);
 		var _g = this.world;
 		_g.set_minutes(_g.minutes + action.duration);
 		var _g1 = 0;
@@ -164,7 +178,7 @@ Main.prototype = {
 			var effect = _g11[_g1];
 			++_g1;
 			var graph = this.graphs.h[effect.id];
-			graph.addData({ time : this.world.minutes, value : this.world.actor.needs[effect.id].value},this.world.minutes);
+			graph.addData({ time : this.world.minutes, value : this.world.agent.brain.needs[effect.id].value},this.world.minutes);
 		}
 	}
 	,generateTerminal: function() {
@@ -233,7 +247,7 @@ Main.prototype = {
 		btn.appendChild(t);
 		settings.appendChild(btn);
 		btn.onclick = function() {
-			_g.world.actor.autonomous = !_g.world.actor.autonomous;
+			_g.world.agent.autonomous = !_g.world.agent.autonomous;
 		};
 	}
 	,generateSliders: function() {
@@ -241,13 +255,18 @@ Main.prototype = {
 	,generateGraphs: function() {
 		this.graphs = new haxe_ds_IntMap();
 		var _g = 0;
-		var _g1 = this.world.actor.needs;
+		var _g1 = this.world.agent.brain.needs;
 		while(_g < _g1.length) {
 			var motive = _g1[_g];
 			++_g;
 			var graph = new NeedGraph(motive,[{ time : 0, value : motive.value}],"#graphs",200,100);
 			this.graphs.h[motive.id] = graph;
 		}
+	}
+	,set_updateInterval: function(time) {
+		if(this.updateHandle != null) window.clearInterval(this.updateHandle);
+		this.updateHandle = window.setInterval($bind(this,this.update),time);
+		return time;
 	}
 };
 Math.__name__ = true;
@@ -314,6 +333,19 @@ StringTools.__name__ = true;
 StringTools.replace = function(s,sub,by) {
 	return s.split(sub).join(by);
 };
+var Agent = function(brain) {
+	this.brain = brain;
+	this.autonomous = false;
+};
+Agent.__name__ = true;
+Agent.prototype = {
+	act: function(action) {
+		this.brain.act(action);
+	}
+	,update: function(dt) {
+		this.brain.update(dt);
+	}
+};
 var World = function() {
 	this.livesRuined = 0;
 	this.feelingsHurt = 0;
@@ -325,7 +357,7 @@ var World = function() {
 	needs.push(new ai_Need(2,0.5,0.04,1.0,null,"Hunger"));
 	needs.push(new ai_Need(3,0.3,0.06,1.0,null,"Hygiene"));
 	needs.push(new ai_Need(4,0.5,0.07,1.0,null,"Bladder"));
-	this.actor = new ai_Brain(this,needs);
+	this.agent = new Agent(new ai_Brain(this,needs));
 	this.actions = [];
 	this.context = new haxe_ds_GenericStack();
 	this.context.add(new Desk(this));
@@ -339,47 +371,31 @@ var World = function() {
 World.__name__ = true;
 World.prototype = {
 	update: function(dt) {
-		this.actor.step(dt);
+		this.agent.update(dt);
 	}
 	,set_minutes: function(min) {
 		if(this.clock != null) this.clock.setTime(min * 60);
 		return this.minutes = min;
 	}
 };
-var ai_Action = function(id,trigger,duration,effects) {
-	this.id = id;
-	this.trigger = trigger;
-	this.duration = duration;
-	this.effects = effects;
-};
-ai_Action.__name__ = true;
 var ai_Brain = function(world,needs) {
 	this.world = world;
 	this.needs = needs;
 	this.needTraits = new haxe_ds_IntMap();
-	this.experiences = [];
-	this.autonomous = true;
 };
 ai_Brain.__name__ = true;
 ai_Brain.prototype = {
-	act: function() {
+	act: function(action) {
 		var _g = 0;
-		var _g1 = this.experiences;
+		var _g1 = action.effects;
 		while(_g < _g1.length) {
-			var action = _g1[_g];
+			var effect = _g1[_g];
 			++_g;
-			var _g2 = 0;
-			var _g3 = action.effects;
-			while(_g2 < _g3.length) {
-				var effect = _g3[_g2];
-				++_g2;
-				effect.effect(this.world);
-				this.needs[effect.id].update(action.duration);
-			}
+			effect.effect(this.world);
+			this.needs[effect.id].update(action.duration);
 		}
-		this.experiences = [];
 	}
-	,step: function(dt) {
+	,update: function(dt) {
 		var _g = 0;
 		var _g1 = this.needs;
 		while(_g < _g1.length) {
@@ -398,9 +414,7 @@ var ai_Need = function(id,initialValue,growthRate,drainModifier,growthCurve,tag)
 	this.growthRate = growthRate;
 	this.modifier = drainModifier;
 	this.tag = tag;
-	if(growthCurve != null) this.growthCurve = growthCurve; else this.growthCurve = function(v) {
-		return v;
-	};
+	if(growthCurve != null) this.growthCurve = growthCurve; else this.growthCurve = $bind(this,this.linear);
 };
 ai_Need.__name__ = true;
 ai_Need.prototype = {
@@ -410,6 +424,9 @@ ai_Need.prototype = {
 	}
 	,set_value: function(v) {
 		return v < 0?this.value = 0:v > 1?this.value = 1:this.value = v;
+	}
+	,linear: function(v) {
+		return v;
 	}
 };
 var haxe_IMap = function() { };

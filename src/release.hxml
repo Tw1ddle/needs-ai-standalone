@@ -1,5 +1,6 @@
 --no-traces
 
 -lib sure
+-lib msignal
 
 -js ../bin/release/js/game.js

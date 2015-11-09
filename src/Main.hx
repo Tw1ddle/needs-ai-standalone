@@ -10,10 +10,22 @@ import World;
 using util.ArrayExtensions;
 using util.StringExtensions;
 
+class TriggerAction extends Action {
+	public var trigger(default, null):Array<String>;
+	
+	public function new(id:Int, trigger:Array<String>, duration:Float, effects:Array<Effect>) {
+		super(id, duration, effects);
+		this.trigger = trigger;
+	}
+}
+
 class Main {
 	private var world:World;
 	private var graphs:IntMap<NeedGraph>;
 	private var gameover:Bool;
+	
+	private var updateHandle:Null<Int>;
+	private var updateInterval(never, set):Int;
 	
     private static function main():Void {
 		new Main();
@@ -33,7 +45,8 @@ class Main {
 		generateSliders();
 		generateGraphs();
 		
-		Browser.window.setInterval(update, 1000);
+		updateHandle = null;
+		updateInterval = 1000;
 	}
 	
 	private inline function update():Void {
@@ -41,7 +54,7 @@ class Main {
 		world.update(1);
 		
 		for (graph in graphs) {				
-			for (motive in world.actor.needs) {
+			for (motive in world.agent.brain.needs) {
 				var graph:NeedGraph = graphs.get(motive.id);
 				graph.addData( { time: world.minutes, value: motive.value }, world.minutes );
 			}
@@ -54,14 +67,13 @@ class Main {
 		}
 	}
 	
-	private inline function handleAction(action:Action):Void {
-		world.actor.experiences.push(action);
-		world.actor.act();
+	private inline function handleAction(action:TriggerAction):Void {
+		world.agent.act(action);
 		world.minutes += action.duration;
 		
 		for (effect in action.effects) {
 			var graph = graphs.get(effect.id);
-			graph.addData( { time: world.minutes, value: world.actor.needs[effect.id].value }, world.minutes );
+			graph.addData( { time: world.minutes, value: world.agent.brain.needs[effect.id].value }, world.minutes );
 		}
 	}
 	
@@ -121,7 +133,7 @@ class Main {
 		btn.appendChild(t);
 		settings.appendChild(btn);
 		btn.onclick = function():Void {
-			world.actor.autonomous = !world.actor.autonomous;
+			world.agent.autonomous = !world.agent.autonomous;
 		};
 	}
 	
@@ -131,9 +143,17 @@ class Main {
 	
 	private inline function generateGraphs():Void {
 		graphs = new IntMap<NeedGraph>();
-		for (motive in world.actor.needs) {
+		for (motive in world.agent.brain.needs) {
 			var graph:NeedGraph = new NeedGraph(motive, [ { time: 0, value: motive.value } ], "#graphs", 200, 100);
 			graphs.set(motive.id, graph);
 		}
+	}
+	
+	private function set_updateInterval(time:Int):Int {
+		if (updateHandle != null) {
+			Browser.window.clearInterval(updateHandle);
+		}
+		updateHandle = Browser.window.setInterval(update, time);
+		return time;
 	}
 }

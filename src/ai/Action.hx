@@ -1,20 +1,17 @@
 package ai;
 
-// Solutions to problems
-typedef ActionEffect = { 
-	var id:Int; 
-	var effect:Dynamic->Void; 
+typedef Effect = {
+	var id:Int;
+	var effect:Dynamic->Void; // Effect accepts data that it acts on e.g. the game world
 }
 
 class Action {
-	public var id:Int;
-	public var trigger:Array<String>;
-	public var duration:Float;
-	public var effects:Array<ActionEffect>;
+	public var id(default, null):Int;
+	public var duration(default, null):Float;
+	public var effects(default, null):Array<Effect>;
 	
-	public function new(id:Int, trigger:Array<String>, duration:Float, effects:Array<ActionEffect>) {
+	public function new(id:Int, duration:Float, effects:Array<Effect>) {
 		this.id = id;
-		this.trigger = trigger;
 		this.duration = duration;
 		this.effects = effects;
 	}

@@ -15,20 +15,20 @@ typedef TimeData = {
 }
 
 class NeedGraph {	
-	public var data:Array<TimeData>;
-	public var title:String;
-	public var width:Int;
-	public var height:Int;
-	public var minY:Int = 0;
-	public var maxY:Int = 1;
-	public var x:Linear;
-	public var y:Linear;
-	public var xAxis:Axis;
-	public var yAxis:Axis;
-	public var elementId:String;
-	public var svg:Selection;
-	public var line:Line;
-	public var graphId:String;
+	private var data:Array<TimeData>;
+	private var title:String;
+	private var width:Int;
+	private var height:Int;
+	private var minY:Int = 0;
+	private var maxY:Int = 1;
+	private var x:Linear;
+	private var y:Linear;
+	private var xAxis:Axis;
+	private var yAxis:Axis;
+	private var elementId:String;
+	private var svg:Selection;
+	private var line:Line;
+	private var graphId:String;
 	
 	public function new(need:Need, data:Array<TimeData>, elementId:String, width:Int, height:Int) {
 		this.data = data;
