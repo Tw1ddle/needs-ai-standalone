@@ -49,6 +49,8 @@ class Desk extends Location {
 		
 		actions.push(new TriggerAction(ActionId.COMPUTER, [ "computer" ], 8, [ { id: ProblemId.LULZ, effect:function(world:World):Void {
 			Terminal.echo("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
+			
+			world.agent.brain.needs[ProblemId.LULZ].value -= 0.2;
 		} } ]));
 	}
 }
@@ -86,6 +88,9 @@ class Bed extends Location {
 		
 		actions.push(new TriggerAction(ActionId.SLEEP, [ "sleep" ], 40, [ { id: ProblemId.TIREDNESS, effect:function(world:World):Void {
 			Terminal.echo("You settle down for forty winks.");
+			
+			var rest = Math.random() * 0.5 + 0.3;
+			world.agent.brain.needs[ProblemId.TIREDNESS].value -= rest;
 		} } ]));
 	}
 }
@@ -96,6 +101,10 @@ class Shower extends Location {
 		
 		actions.push(new TriggerAction(ActionId.SHOWER, [ "shower" ], 15, [ { id: ProblemId.HYGIENE, effect:function(world:World):Void {
 			Terminal.echo("You wash the filth off your body.");
+			
+			var clean = 0.3;
+			
+			world.agent.brain.needs[ProblemId.HYGIENE].value -= clean;
 		} } ]));
 	}
 }
@@ -106,6 +115,8 @@ class Toilet extends Location {
 		
 		actions.push(new TriggerAction(ActionId.TOILET, [ "toilet" ], 5, [ { id: ProblemId.BLADDER, effect:function(world:World):Void {
 			Terminal.echo("You relieve yourself.");
+			
+			world.agent.brain.needs[ProblemId.BLADDER].value -= 1.0;
 		} } ]));
 	}
 }

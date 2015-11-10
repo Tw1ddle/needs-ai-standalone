@@ -18,7 +18,6 @@ class Brain {
 	public function act(action:Action):Void {		
 		for (effect in action.effects) {
 			effect.effect(world);
-			needs[effect.id].update(action.duration);
 		}
 	}
 	

@@ -52,7 +52,7 @@ class World {
 		
 		agent = new Agent(new Brain(this, needs));
 		actions = new Array<ActionId>();
-		context = new GenericStack<Location>();		
+		context = new GenericStack<Location>();
 		context.add(new Desk(this));
 		context.add(new Bed(this));
 		context.add(new Fridge(this));

@@ -36,6 +36,8 @@ var Desk = function(world) {
 	Location.call(this,"Desktop","The old rig, designed for a hacker on steroids");
 	this.actions.push(new TriggerAction(0,["computer"],8,[{ id : 0, effect : function(world1) {
 		terminal.echo("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
+		var _g = world1.agent.brain.needs[0];
+		_g.set_value(_g.value - 0.2);
 	}}]));
 };
 Desk.__name__ = true;
@@ -88,6 +90,9 @@ var Bed = function(world) {
 	Location.call(this,"Bed","The old bed");
 	this.actions.push(new TriggerAction(1,["sleep"],40,[{ id : 1, effect : function(world1) {
 		terminal.echo("You settle down for forty winks.");
+		var rest = Math.random() * 0.5 + 0.3;
+		var _g = world1.agent.brain.needs[1];
+		_g.set_value(_g.value - rest);
 	}}]));
 };
 Bed.__name__ = true;
@@ -98,6 +103,9 @@ var Shower = function(world) {
 	Location.call(this,"Shower","The shower.");
 	this.actions.push(new TriggerAction(3,["shower"],15,[{ id : 3, effect : function(world1) {
 		terminal.echo("You wash the filth off your body.");
+		var clean = 0.3;
+		var _g = world1.agent.brain.needs[3];
+		_g.set_value(_g.value - clean);
 	}}]));
 };
 Shower.__name__ = true;
@@ -108,6 +116,8 @@ var Toilet = function(world) {
 	Location.call(this,"Toilet","The toilet.");
 	this.actions.push(new TriggerAction(4,["toilet"],5,[{ id : 4, effect : function(world1) {
 		terminal.echo("You relieve yourself.");
+		var _g = world1.agent.brain.needs[4];
+		_g.set_value(_g.value - 1.0);
 	}}]));
 };
 Toilet.__name__ = true;
@@ -392,7 +402,6 @@ ai_Brain.prototype = {
 			var effect = _g1[_g];
 			++_g;
 			effect.effect(this.world);
-			this.needs[effect.id].update(action.duration);
 		}
 	}
 	,update: function(dt) {
@@ -405,14 +414,14 @@ ai_Brain.prototype = {
 		}
 	}
 };
-var ai_Need = function(id,initialValue,growthRate,drainModifier,growthCurve,tag) {
+var ai_Need = function(id,initialValue,growthRate,growthModifier,growthCurve,tag) {
 	if(tag == null) tag = "Unnamed Motive";
-	if(drainModifier == null) drainModifier = 1.0;
+	if(growthModifier == null) growthModifier = 1.0;
 	if(growthRate == null) growthRate = 0.01;
 	this.id = id;
 	this.set_value(initialValue);
 	this.growthRate = growthRate;
-	this.modifier = drainModifier;
+	this.growthModifier = growthModifier;
 	this.tag = tag;
 	if(growthCurve != null) this.growthCurve = growthCurve; else this.growthCurve = $bind(this,this.linear);
 };
@@ -420,7 +429,7 @@ ai_Need.__name__ = true;
 ai_Need.prototype = {
 	update: function(dt) {
 		var _g = this;
-		_g.set_value(_g.value + this.growthCurve(dt * this.growthRate * this.modifier));
+		_g.set_value(_g.value + this.growthCurve(dt * this.growthRate * this.growthModifier));
 	}
 	,set_value: function(v) {
 		return v < 0?this.value = 0:v > 1?this.value = 1:this.value = v;
