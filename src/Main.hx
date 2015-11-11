@@ -56,20 +56,22 @@ class Main {
 	 * Update loop
 	 */
 	private inline function update():Void {
-		world.minutes += 1;
-		world.update(1);
-		
-		for (graph in graphs) {				
-			for (motive in world.agent.brain.needs) {
-				var graph:NeedGraph = graphs.get(motive.id);
-				graph.addData( { time: world.minutes, value: motive.value }, world.minutes );
+		if(!world.gameover) {
+			world.minutes += 1;
+			world.update(1);
+			
+			for (graph in graphs) {				
+				for (motive in world.agent.brain.needs) {
+					var graph:NeedGraph = graphs.get(motive.id);
+					graph.addData( { time: world.minutes, value: motive.value }, world.minutes );
+				}
 			}
-		}
-		
-		if (world.minutes >= 60 * 24) {
-			world.gameover = true;
-			world.clock.stop();
-			Terminal.echo("Time's up. Better start looking for a job...");
+			
+			if (world.minutes >= 60 * 24) {
+				world.gameover = true;
+				world.clock.stop();
+				Terminal.echo("Time's up. Better start looking for a job...");
+			}
 		}
 	}
 	
@@ -77,12 +79,14 @@ class Main {
 	 * Helper method for execution a resolved player action
 	 */
 	private inline function handleAction(action:Action):Void {
-		world.agent.act(action);
-		world.minutes += action.duration;
-		
-		for (effect in action.effects) {
-			var graph = graphs.get(effect.id);
-			graph.addData( { time: world.minutes, value: world.agent.brain.needs[effect.id].value }, world.minutes );
+		if(!world.gameover) {
+			world.agent.act(action);
+			world.minutes += action.duration;
+			
+			for (effect in action.effects) {
+				var graph = graphs.get(effect.id);
+				graph.addData( { time: world.minutes, value: world.agent.brain.needs[effect.id].value }, world.minutes );
+			}
 		}
 	}
 	

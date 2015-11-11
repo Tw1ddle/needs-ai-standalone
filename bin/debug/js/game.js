@@ -148,38 +148,42 @@ Main.prototype = {
 		this.world.agent.brain.signal_selectedAction.add($bind(this,this.handleAction));
 	}
 	,update: function() {
-		var _g = this.world;
-		_g.set_minutes(_g.minutes + 1);
-		this.world.update(1);
-		var $it0 = this.graphs.iterator();
-		while( $it0.hasNext() ) {
-			var graph = $it0.next();
-			var _g1 = 0;
-			var _g11 = this.world.agent.brain.needs;
-			while(_g1 < _g11.length) {
-				var motive = _g11[_g1];
-				++_g1;
-				var graph1 = this.graphs.h[motive.id];
-				graph1.addData({ time : this.world.minutes, value : motive.value},this.world.minutes);
+		if(!this.world.gameover) {
+			var _g = this.world;
+			_g.set_minutes(_g.minutes + 1);
+			this.world.update(1);
+			var $it0 = this.graphs.iterator();
+			while( $it0.hasNext() ) {
+				var graph = $it0.next();
+				var _g1 = 0;
+				var _g11 = this.world.agent.brain.needs;
+				while(_g1 < _g11.length) {
+					var motive = _g11[_g1];
+					++_g1;
+					var graph1 = this.graphs.h[motive.id];
+					graph1.addData({ time : this.world.minutes, value : motive.value},this.world.minutes);
+				}
 			}
-		}
-		if(this.world.minutes >= 1440) {
-			this.world.gameover = true;
-			this.world.clock.stop();
-			terminal.echo("Time's up. Better start looking for a job...");
+			if(this.world.minutes >= 1440) {
+				this.world.gameover = true;
+				this.world.clock.stop();
+				terminal.echo("Time's up. Better start looking for a job...");
+			}
 		}
 	}
 	,handleAction: function(action) {
-		this.world.agent.act(action);
-		var _g = this.world;
-		_g.set_minutes(_g.minutes + action.duration);
-		var _g1 = 0;
-		var _g11 = action.effects;
-		while(_g1 < _g11.length) {
-			var effect = _g11[_g1];
-			++_g1;
-			var graph = this.graphs.h[effect.id];
-			graph.addData({ time : this.world.minutes, value : this.world.agent.brain.needs[effect.id].value},this.world.minutes);
+		if(!this.world.gameover) {
+			this.world.agent.act(action);
+			var _g = this.world;
+			_g.set_minutes(_g.minutes + action.duration);
+			var _g1 = 0;
+			var _g11 = action.effects;
+			while(_g1 < _g11.length) {
+				var effect = _g11[_g1];
+				++_g1;
+				var graph = this.graphs.h[effect.id];
+				graph.addData({ time : this.world.minutes, value : this.world.agent.brain.needs[effect.id].value},this.world.minutes);
+			}
 		}
 	}
 	,createTerminal: function() {
