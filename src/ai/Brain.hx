@@ -40,14 +40,16 @@ class Brain {
 				null;
 		}
 		
-		actOnNeed(need);
+		if(need != null) {
+			actOnNeed(need);
+		}
 	}
 	
 	private inline function getGreatestNeed():Need {
 		var idx:Int = 0;
 		var value:Float = 0;
 		for (i in 0...needs.length) {
-			if (value < needs[idx].value) {
+			if (needs[i].value > value) {
 				value = needs[idx].value;
 				idx = i;
 			}
@@ -63,11 +65,7 @@ class Brain {
 		return needs.randomElement();
 	}
 	
-	private inline function actOnNeed(need:Need):Void {
-		if (need == null) {
-			return;
-		}
-		
+	private inline function actOnNeed(need:Need):Void {		
 		var actions = findActions(need);
 		act(actions.randomElement());
 	}

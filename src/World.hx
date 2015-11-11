@@ -101,7 +101,6 @@ class World {
 					}
 				}
 			}
-			actions = actions.concat(cast location.actions);
 		}
 		return actions;
 	}

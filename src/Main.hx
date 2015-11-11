@@ -38,6 +38,7 @@ class Main {
 		generateActionButtons();
 		generateSliders();
 		generateGraphs();
+		connectStrategySelection();
 		
 		updateHandle = null;
 		updateInterval = 1000;

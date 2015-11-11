@@ -138,6 +138,7 @@ Main.prototype = {
 		this.generateActionButtons();
 		this.generateSliders();
 		this.generateGraphs();
+		this.connectStrategySelection();
 		this.updateHandle = null;
 		this.set_updateInterval(1000);
 	}
@@ -434,7 +435,6 @@ World.prototype = {
 					}
 				}
 			}
-			actions = actions.concat(location.actions);
 		}
 		return actions;
 	}
@@ -478,7 +478,7 @@ ai_Brain.prototype = {
 		default:
 			need = null;
 		}
-		this.actOnNeed(need);
+		if(need != null) this.actOnNeed(need);
 	}
 	,getGreatestNeed: function() {
 		var idx = 0;
@@ -487,11 +487,13 @@ ai_Brain.prototype = {
 		var _g = this.needs.length;
 		while(_g1 < _g) {
 			var i = _g1++;
-			if(value < this.needs[idx].value) {
+			if(this.needs[i].value > value) {
 				value = this.needs[idx].value;
 				idx = i;
 			}
 		}
+		console.log(this.needs);
+		console.log(this.needs[idx]);
 		return this.needs[idx];
 	}
 	,getWeightedRandomNeed: function() {
@@ -501,7 +503,6 @@ ai_Brain.prototype = {
 		return util_ArrayExtensions.randomElement(this.needs);
 	}
 	,actOnNeed: function(need) {
-		if(need == null) return;
 		var actions = this.world.queryContextForActions(need);
 		this.act((function($this) {
 			var $r;
