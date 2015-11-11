@@ -16,7 +16,7 @@ import Ids;
 	var DISABLED = "disabled";
 }
 
-// Models an agent, just a brain and a means of performing actions.
+// Models an agent, a brain and a means of performing actions
 class Agent {
 	public var brain(default, null):Brain;
 	public var aiMode:Strategy;

@@ -10,6 +10,7 @@ import js.nouislider.NoUiSlider;
 import js.wNumb.WNumb;
 import js.html.Element;
 import js.html.SelectElement;
+import msignal.Signal;
 
 using util.ArrayExtensions;
 using util.StringExtensions;
@@ -23,6 +24,9 @@ class Main {
 	
 	private var updateRateElement:Element;
 	private var strategyElement:SelectElement;
+	
+	private var signal_actionButtonPressed:Signal1<TriggerAction> = new Signal1<TriggerAction>();
+	private var signal_consoleActionIssued:Signal1<TriggerAction> = new Signal1<TriggerAction>();
 	
     private static function main():Void {
 		new Main();
@@ -42,6 +46,10 @@ class Main {
 		
 		updateHandle = null;
 		updateInterval = 1000;
+		
+		signal_actionButtonPressed.add(handleAction);
+		signal_consoleActionIssued.add(handleAction);
+		world.agent.brain.signal_selectedAction.add(handleAction);
 	}
 	
 	/*
@@ -68,7 +76,7 @@ class Main {
 	/*
 	 * Helper method for execution a resolved player action
 	 */
-	private inline function handleAction(action:TriggerAction):Void {
+	private inline function handleAction(action:Action):Void {
 		world.agent.act(action);
 		world.minutes += action.duration;
 		
@@ -95,7 +103,7 @@ class Main {
 					}
 					if (action.trigger.length != 0 && containsParts) {
 						recognizedCommand = true;
-						handleAction(action);
+						signal_consoleActionIssued.dispatch(action);
 					}
 				}
 			}
@@ -127,7 +135,7 @@ class Main {
 				btn.appendChild(t);
 				actions.appendChild(btn);
 				btn.onclick = function():Void {
-					handleAction(action);
+					signal_actionButtonPressed.dispatch(action);
 				};
 			}
 		}

@@ -1,6 +1,8 @@
 package ai;
 
 import haxe.ds.IntMap;
+import msignal.Signal;
+
 import World;
 
 using util.ArrayExtensions;
@@ -9,8 +11,11 @@ using util.ArrayExtensions;
 class Brain {
 	public var world(default, null):Dynamic;
 	public var needs(default, null):Array<Need>; // Reasons for doing stuff
+	
 	public var needTraits(default, null):IntMap<Float->Float>; // Motive traits affect the way some motives change over time e.g. slobs get hungrier faster
 	public var actionTraits(default, null):IntMap<Float->Float>; // Action traits affect the way actions are calculated e.g. override or modify effects
+	
+	public var signal_selectedAction:Signal1<Action> = new Signal1<Action>();
 	
 	public inline function new(world:Dynamic, needs:Array<Need>) {
 		this.world = world;
@@ -40,7 +45,7 @@ class Brain {
 				null;
 		}
 		
-		if(need != null) {
+		if (need != null) {
 			actOnNeed(need);
 		}
 	}
@@ -67,7 +72,7 @@ class Brain {
 	
 	private inline function actOnNeed(need:Need):Void {		
 		var actions = findActions(need);
-		act(actions.randomElement());
+		signal_selectedAction.dispatch(actions.randomElement());
 	}
 	
 	private inline function findActions(need:Need):Array<Action> {
