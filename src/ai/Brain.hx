@@ -1,6 +1,9 @@
 package ai;
 
 import haxe.ds.IntMap;
+import World;
+
+using util.ArrayExtensions;
 
 // Represents an AI
 class Brain {
@@ -26,7 +29,50 @@ class Brain {
 			motive.update(dt);
 		}
 		
-		// TODO if autonomous then do something
-		// TODO create probability distribution, or always choose best option, or maybe use min/max triggers
+		var need = switch(world.agent.aiMode) {
+			case Strategy.HIGHEST_NEEDS:
+				getGreatestNeed();
+			case Strategy.TRUE_RANDOM:
+				getRandomNeed();
+			case Strategy.WEIGHTED_RANDOM:
+				getWeightedRandomNeed();
+			default:
+				null;
+		}
+		
+		actOnNeed(need);
+	}
+	
+	private inline function getGreatestNeed():Need {
+		var idx:Int = 0;
+		var value:Float = 0;
+		for (i in 0...needs.length) {
+			if (value < needs[idx].value) {
+				value = needs[idx].value;
+				idx = i;
+			}
+		}
+		return needs[idx];
+	}
+	
+	private inline function getWeightedRandomNeed():Need {
+		return needs[0];
+	}
+	
+	private inline function getRandomNeed():Need {
+		return needs.randomElement();
+	}
+	
+	private inline function actOnNeed(need:Need):Void {
+		if (need == null) {
+			return;
+		}
+		
+		var actions = findActions(need);
+		act(actions.randomElement());
+	}
+	
+	private inline function findActions(need:Need):Array<Action> {
+		return world.queryContextForActions(need);
 	}
 }

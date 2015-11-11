@@ -4,18 +4,26 @@ import ai.Action;
 import ai.Brain;
 import ai.Need;
 import haxe.ds.GenericStack;
+import js.Browser;
 import js.flipclock.FlipClock;
 import Locations;
-import js.Browser;
 import Ids;
 
+@:enum abstract Strategy(String) from String to String {
+	var HIGHEST_NEEDS = "highest_needs";
+	var TRUE_RANDOM = "true_random";
+	var WEIGHTED_RANDOM = "weighted_random";
+	var DISABLED = "disabled";
+}
+
+// Models an agent, just a brain and a means of performing actions.
 class Agent {
 	public var brain(default, null):Brain;
-	public var autonomous:Bool;
+	public var aiMode:Strategy;
 	
 	public function new(brain:Brain) {
 		this.brain = brain;
-		autonomous = false;
+		this.aiMode = Strategy.HIGHEST_NEEDS;
 	}
 	
 	public function act(action:Action):Void {
@@ -27,31 +35,21 @@ class Agent {
 	}
 }
 
+// The game world
 class World {
-	public var context:GenericStack<Location>;
-	public var agent:Agent;
-	public var clock:FlipClock;
-	public var livesRuined:Int;
-	public var feelingsHurt:Int;
-	public var minutes(default, set):Float;
-	public var lastUpdateMinutes:Float;
-	public var actions:Array<ActionId>;
+	public var clock:FlipClock; // The onscreen clock that delivers the time
+	public var minutes(default, set):Float; // Game minutes passed
+	public var gameover:Bool;
 	
-	public inline function new() {		
-		livesRuined = 0;
-		feelingsHurt = 0;
+	public var context:GenericStack<Location>; // The locations the agent is in
+	public var agent:Agent; // The player agent
+	
+	public inline function new() {
+		clock = new FlipClock(Browser.document.getElementById("time"));
+		clock.stop();
 		minutes = 0;
-		lastUpdateMinutes = 0;
+		gameover = false;
 		
-		var needs = new Array<Need>();
-		needs.push(new Need(ProblemId.LULZ, 0.50, 0.03, 1.0, "Boredom"));
-		needs.push(new Need(ProblemId.TIREDNESS, 0.07, 0.01, 1.0, "Tiredness"));
-		needs.push(new Need(ProblemId.HUNGER, 0.5, 0.04, 1.0, "Hunger"));
-		needs.push(new Need(ProblemId.HYGIENE, 0.3, 0.06, 1.0, "Hygiene"));
-		needs.push(new Need(ProblemId.BLADDER, 0.5, 0.07, 1.0, "Bladder"));
-		
-		agent = new Agent(new Brain(this, needs));
-		actions = new Array<ActionId>();
 		context = new GenericStack<Location>();
 		context.add(new Desk(this));
 		context.add(new Bed(this));
@@ -59,18 +57,52 @@ class World {
 		context.add(new Shower(this));
 		context.add(new Toilet(this));
 		
-		clock = new FlipClock(Browser.document.getElementById("time"));
-		clock.stop();
+		var needs = new Array<Need>();
+		needs.push(new Need(NeedId.LULZ, 0.20, 0.03, 1.0, "Boredom"));
+		needs.push(new Need(NeedId.TIREDNESS, 0.07, 0.01, 1.0, "Tiredness"));
+		needs.push(new Need(NeedId.HUNGER, 0.25, 0.04, 1.0, "Hunger"));
+		needs.push(new Need(NeedId.HYGIENE, 0.10, 0.02, 1.0, "Hygiene"));
+		needs.push(new Need(NeedId.BLADDER, 0.30, 0.03, 1.0, "Bladder"));
+		agent = new Agent(new Brain(this, needs));
 	}
 	
 	public function update(dt:Float):Void {
 		agent.update(dt);
+		
+		for (need in agent.brain.needs) {
+			if (need.value >= 1.0) {
+				gameover = true;
+			}
+		}
 	}
 	
+	/*
+	 * Sets the onscreen clock to reflect the number of game minutes passed
+	 */
 	public function set_minutes(min:Float):Float {
 		if(clock != null) {
 			clock.setTime(min * 60);
 		}
 		return this.minutes = min;
+	}
+	
+	/*
+	 * Gets an array of all the actions available to an agent within its current context
+	 */
+	public function queryContextForActions(need:Need):Array<Action> {
+		var actions = new Array<Action>();
+		for (location in context) {
+			for (action in location.actions) {
+				var addedAction:Bool = false;
+				for (effect in action.effects) {
+					if (need.id == effect.id) {
+						actions.push(action);
+						break;
+					}
+				}
+			}
+			actions = actions.concat(cast location.actions);
+		}
+		return actions;
 	}
 }

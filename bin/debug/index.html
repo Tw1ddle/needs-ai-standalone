@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,user-scalable=yes,initial-scale=1,maximum-scale=1">
-		<title>Unemployment Quest</title>
+		<title>Boredom Quest</title>
 		<meta name="author" content="Sam Twidale">
 		<link rel="icon" type="image/x-icon" href="icon/favicon.png">
 		<link rel="apple-touch-icon-precomposed" type="image/x-icon" href="icon/apple-touch-icon-precomposed.png">
@@ -19,10 +19,10 @@
     <body>
 		<section id="header">
 			<div class="inner">
-				<h1>Unemployment Quest</h1>
+				<h1>Boredom Quest</h1>
 				<h2>Survive for 24 hours.</h2>
 
-				<p>Minor text adventure demonstrating a <a href="http://www.gamasutra.com/view/feature/131519/designing_needbased_ai_for_.php" target="_blank">need-based AI</a>. Free and <a href="https://github.com/Tw1ddle/needs-ai" target="_blank">open source</a>, written in <a href="http://haxe.org/" target="_blank">Haxe</a> by <a href="https://twitter.com/Sam_Twidale" target="_blank">Sam Twidale</a>.</p>
+				<p>Minature text adventure demonstrating a <a href="http://www.gamasutra.com/view/feature/131519/designing_needbased_ai_for_.php" target="_blank">need-based AI</a>. Free and <a href="https://github.com/Tw1ddle/needs-ai" target="_blank">open source</a>, written in <a href="http://haxe.org/" target="_blank">Haxe</a> by <a href="https://twitter.com/Sam_Twidale" target="_blank">Sam Twidale</a>.</p>
 				
 				<div id="time" class="container"></div>
 			</div>
@@ -53,26 +53,30 @@
 		<div id="settings" class="stitched">
 			<h2>Settings</h2>
 			<div class="container">
-				<h3>Toggle AI</h3>
-				<div id="toggleai" class="black"></div>
-			</div>
-			<div class="container">
-				<h3>Clock Speed</h3>
-				<div id="speed" class="red"></div>
+				<h3>Updates Per Second</h3>
+				<div class="container">
+					<div id="clockspeed" class="red"></div>
+				</div>
 			</div>
 			<div class="container">
 				<h3>Strategy</h3>
-				<select id="strategy">
-					<option value="highest_needs" selected="selected">Highest Needs First</option>
-					<option value="true_random">True Random</option>
-					<option value="weighted_random">Weighted Random</option>
-				</select>
+				<div class="container">
+					<select id="strategy">
+						<option value="highest_needs" selected="selected">Highest Needs First</option>
+						<option value="true_random">True Random</option>
+						<option value="weighted_random">Weighted Random</option>
+						<option value="disabled">Disabled</option>
+					</select>
+				</div>
 			</div>
 		</div>
 		
 		<div class="stitched">
-			<h2>What is this?</h2>
-			<p>This demonstrates a needs-based AI implementation. It simulates an Internet denizen. Inspired by <a href="http://www.bay12games.com/lcs/" target="_blank">Liberal Crime Squad</a>.</p>
+			<h2>How It Works</h2>
+			<p>This demonstrates a simple need-based AI implementation that simulates someone sitting in front of their computer all day. The <a href="https://github.com/Tw1ddle/UnemploymentQuest" target="_blank">MIT-licensed code</a> could be a starting point for AI for a roguelike, text adventure or <a href="http://intrinsicalgorithm.com/IAonAI/2009/10/aiide-2009-ai-challenges-in-sims-3-richard-evans/" target="_blank">Sims-style game</a>.</p>
+			<p>The AI is modelled as a set of needs and a strategy to meet them. There are four strategies: always choose actions to satisfy the most urgent need, random selection weighted towards more urgent needs, true random selection, and nothing (purely manual control).</p>
+			<p>Threshold values are used to make the agent repeat actions to satisfy a need, when a single action might not be sufficient. Modifiers are used to change the effectiveness of needs or actions, to model traits or personality differences.</p>
+			<p>This was inspired by text adventures like <a href="http://www.bay12games.com/lcs/" target="_blank">Liberal Crime Squad</a> and <a href="http://www.mobygames.com/game/dos/oubliette" target="_blank">Oubliette</a>, but went on a tangent.</p>
 			<p>If you have any suggestions, requests or comments then feel free to <a href="http://samcodes.co.uk/contact/" target="_blank">contact me</a>.</p>
 		</div>
 		

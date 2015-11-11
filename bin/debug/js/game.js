@@ -124,20 +124,6 @@ Toilet.__name__ = true;
 Toilet.__super__ = Location;
 Toilet.prototype = $extend(Location.prototype,{
 });
-var ai_Action = function(id,duration,effects) {
-	this.id = id;
-	this.duration = duration;
-	this.effects = effects;
-};
-ai_Action.__name__ = true;
-var TriggerAction = function(id,trigger,duration,effects) {
-	ai_Action.call(this,id,duration,effects);
-	this.trigger = trigger;
-};
-TriggerAction.__name__ = true;
-TriggerAction.__super__ = ai_Action;
-TriggerAction.prototype = $extend(ai_Action.prototype,{
-});
 var Main = function() {
 	window.onload = $bind(this,this.onWindowLoaded);
 };
@@ -147,11 +133,10 @@ Main.main = function() {
 };
 Main.prototype = {
 	onWindowLoaded: function() {
-		this.gameover = false;
 		this.world = new World();
-		this.generateTerminal();
+		this.createTerminal();
 		this.generateActionButtons();
-		this.generateSettingsButtons();
+		this.generateSliders();
 		this.generateGraphs();
 		this.updateHandle = null;
 		this.set_updateInterval(1000);
@@ -173,7 +158,7 @@ Main.prototype = {
 			}
 		}
 		if(this.world.minutes >= 1440) {
-			this.gameover = true;
+			this.world.gameover = true;
 			this.world.clock.stop();
 			terminal.echo("Time's up. Better start looking for a job...");
 		}
@@ -191,7 +176,7 @@ Main.prototype = {
 			graph.addData({ time : this.world.minutes, value : this.world.agent.brain.needs[effect.id].value},this.world.minutes);
 		}
 	}
-	,generateTerminal: function() {
+	,createTerminal: function() {
 		var _g = this;
 		terminal.push(function(command,terminal) {
 			var recognizedCommand = false;
@@ -249,18 +234,40 @@ Main.prototype = {
 			}
 		}
 	}
-	,generateSettingsButtons: function() {
-		var _g = this;
-		var settings = window.document.getElementById("settings");
-		var btn = window.document.createElement("button");
-		var t = window.document.createTextNode("toggle AI");
-		btn.appendChild(t);
-		settings.appendChild(btn);
-		btn.onclick = function() {
-			_g.world.agent.autonomous = !_g.world.agent.autonomous;
-		};
-	}
 	,generateSliders: function() {
+		var _g = this;
+		this.updateRateElement = window.document.getElementById("clockspeed");
+		noUiSlider.create(this.updateRateElement,{ connect : "lower", start : 1, range : { 'min' : [0,0.1], 'max' : 10}, format : new wNumb({ decimals : 1}), pips : { mode : "range", density : 10}});
+		this.createTooltips(this.updateRateElement);
+		this.updateRateElement.noUiSlider.on("change",function(values,handle,rawValues) {
+			_g.set_updateInterval(1000 / values[handle] | 0);
+		});
+		this.updateRateElement.noUiSlider.on("update",function(values1,handle1,rawValues1) {
+			_g.updateTooltips(_g.updateRateElement,handle1,values1[handle1]);
+		});
+	}
+	,connectStrategySelection: function() {
+		var _g = this;
+		this.strategyElement = window.document.getElementById("strategy");
+		this.strategyElement.addEventListener("change",function() {
+			if(_g.strategyElement.value != null) _g.world.agent.aiMode = _g.strategyElement.value;
+		},false);
+	}
+	,createTooltips: function(slider) {
+		var tipHandles = slider.getElementsByClassName("noUi-handle");
+		var _g1 = 0;
+		var _g = tipHandles.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var div = window.document.createElement("div");
+			div.className += "tooltip";
+			tipHandles[i].appendChild(div);
+			this.updateTooltips(slider,i,0);
+		}
+	}
+	,updateTooltips: function(slider,handleIdx,value) {
+		var tipHandles = slider.getElementsByClassName("noUi-handle");
+		tipHandles[handleIdx].innerHTML = "<span class='tooltip'>" + (value == null?"null":"" + value) + "</span>";
 	}
 	,generateGraphs: function() {
 		this.graphs = new haxe_ds_IntMap();
@@ -269,7 +276,7 @@ Main.prototype = {
 		while(_g < _g1.length) {
 			var motive = _g1[_g];
 			++_g;
-			var graph = new NeedGraph(motive,[{ time : 0, value : motive.value}],"#graphs",200,100);
+			var graph = new NeedGraph(motive,[{ time : 0, value : motive.value}],"#graphs",150,100);
 			this.graphs.h[motive.id] = graph;
 		}
 	}
@@ -279,6 +286,20 @@ Main.prototype = {
 		return time;
 	}
 };
+var ai_Action = function(id,duration,effects) {
+	this.id = id;
+	this.duration = duration;
+	this.effects = effects;
+};
+ai_Action.__name__ = true;
+var TriggerAction = function(id,trigger,duration,effects) {
+	ai_Action.call(this,id,duration,effects);
+	this.trigger = trigger;
+};
+TriggerAction.__name__ = true;
+TriggerAction.__super__ = ai_Action;
+TriggerAction.prototype = $extend(ai_Action.prototype,{
+});
 Math.__name__ = true;
 var NeedGraph = function(need,data,elementId,width,height) {
 	this.maxY = 1;
@@ -345,7 +366,7 @@ StringTools.replace = function(s,sub,by) {
 };
 var Agent = function(brain) {
 	this.brain = brain;
-	this.autonomous = false;
+	this.aiMode = "highest_needs";
 };
 Agent.__name__ = true;
 Agent.prototype = {
@@ -357,35 +378,65 @@ Agent.prototype = {
 	}
 };
 var World = function() {
-	this.livesRuined = 0;
-	this.feelingsHurt = 0;
+	this.clock = new FlipClock.Factory(window.document.getElementById("time"));
+	this.clock.stop();
 	this.set_minutes(0);
-	this.lastUpdateMinutes = 0;
-	var needs = [];
-	needs.push(new ai_Need(0,0.50,0.03,1.0,null,"Boredom"));
-	needs.push(new ai_Need(1,0.07,0.01,1.0,null,"Tiredness"));
-	needs.push(new ai_Need(2,0.5,0.04,1.0,null,"Hunger"));
-	needs.push(new ai_Need(3,0.3,0.06,1.0,null,"Hygiene"));
-	needs.push(new ai_Need(4,0.5,0.07,1.0,null,"Bladder"));
-	this.agent = new Agent(new ai_Brain(this,needs));
-	this.actions = [];
+	this.gameover = false;
 	this.context = new haxe_ds_GenericStack();
 	this.context.add(new Desk(this));
 	this.context.add(new Bed(this));
 	this.context.add(new Fridge(this));
 	this.context.add(new Shower(this));
 	this.context.add(new Toilet(this));
-	this.clock = new FlipClock.Factory(window.document.getElementById("time"));
-	this.clock.stop();
+	var needs = [];
+	needs.push(new ai_Need(0,0.20,0.03,1.0,null,"Boredom"));
+	needs.push(new ai_Need(1,0.07,0.01,1.0,null,"Tiredness"));
+	needs.push(new ai_Need(2,0.25,0.04,1.0,null,"Hunger"));
+	needs.push(new ai_Need(3,0.10,0.02,1.0,null,"Hygiene"));
+	needs.push(new ai_Need(4,0.30,0.03,1.0,null,"Bladder"));
+	this.agent = new Agent(new ai_Brain(this,needs));
 };
 World.__name__ = true;
 World.prototype = {
 	update: function(dt) {
 		this.agent.update(dt);
+		var _g = 0;
+		var _g1 = this.agent.brain.needs;
+		while(_g < _g1.length) {
+			var need = _g1[_g];
+			++_g;
+			if(need.value >= 1.0) this.gameover = true;
+		}
 	}
 	,set_minutes: function(min) {
 		if(this.clock != null) this.clock.setTime(min * 60);
 		return this.minutes = min;
+	}
+	,queryContextForActions: function(need) {
+		var actions = [];
+		var $it0 = this.context.iterator();
+		while( $it0.hasNext() ) {
+			var location = $it0.next();
+			var _g = 0;
+			var _g1 = location.actions;
+			while(_g < _g1.length) {
+				var action = _g1[_g];
+				++_g;
+				var addedAction = false;
+				var _g2 = 0;
+				var _g3 = action.effects;
+				while(_g2 < _g3.length) {
+					var effect = _g3[_g2];
+					++_g2;
+					if(need.id == effect.id) {
+						actions.push(action);
+						break;
+					}
+				}
+			}
+			actions = actions.concat(location.actions);
+		}
+		return actions;
 	}
 };
 var ai_Brain = function(world,needs) {
@@ -412,6 +463,55 @@ ai_Brain.prototype = {
 			++_g;
 			motive.update(dt);
 		}
+		var need;
+		var _g2 = this.world.agent.aiMode;
+		switch(_g2) {
+		case "highest_needs":
+			need = this.getGreatestNeed();
+			break;
+		case "true_random":
+			need = util_ArrayExtensions.randomElement(this.needs);
+			break;
+		case "weighted_random":
+			need = this.needs[0];
+			break;
+		default:
+			need = null;
+		}
+		this.actOnNeed(need);
+	}
+	,getGreatestNeed: function() {
+		var idx = 0;
+		var value = 0;
+		var _g1 = 0;
+		var _g = this.needs.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(value < this.needs[idx].value) {
+				value = this.needs[idx].value;
+				idx = i;
+			}
+		}
+		return this.needs[idx];
+	}
+	,getWeightedRandomNeed: function() {
+		return this.needs[0];
+	}
+	,getRandomNeed: function() {
+		return util_ArrayExtensions.randomElement(this.needs);
+	}
+	,actOnNeed: function(need) {
+		if(need == null) return;
+		var actions = this.world.queryContextForActions(need);
+		this.act((function($this) {
+			var $r;
+			if(!(actions != null && actions.length != 0)) throw new js__$Boot_HaxeError("FAIL: array != null && array.length != 0");
+			$r = actions[Std.random(actions.length)];
+			return $r;
+		}(this)));
+	}
+	,findActions: function(need) {
+		return this.world.queryContextForActions(need);
 	}
 };
 var ai_Need = function(id,initialValue,growthRate,growthModifier,growthCurve,tag) {

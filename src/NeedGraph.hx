@@ -14,21 +14,22 @@ typedef TimeData = {
 	var value:Float;
 }
 
+// A d3.js graph of a need changing over time
 class NeedGraph {	
-	private var data:Array<TimeData>;
-	private var title:String;
-	private var width:Int;
-	private var height:Int;
-	private var minY:Int = 0;
-	private var maxY:Int = 1;
+	private var data:Array<TimeData>; // The data being graphed
+	private var title:String; // Graph title
+	private var width:Int; // Width not counting margins
+	private var height:Int; // Height not counting margins
+	private var minY:Int = 0; // Minimum value on y-axis
+	private var maxY:Int = 1; // Maximum value on y-axis
 	private var x:Linear;
 	private var y:Linear;
 	private var xAxis:Axis;
 	private var yAxis:Axis;
-	private var elementId:String;
+	private var elementId:String; // Id of the HTML element that the graph will be appended to
 	private var svg:Selection;
 	private var line:Line;
-	private var graphId:String;
+	private var graphId:String; // Id of the graph SVG element itself
 	
 	public function new(need:Need, data:Array<TimeData>, elementId:String, width:Int, height:Int) {
 		this.data = data;
