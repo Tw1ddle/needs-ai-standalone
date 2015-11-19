@@ -11,9 +11,9 @@ Try it out [in the browser](http://www.samcodes.co.uk/project/needs-ai/).
 ## Screenshots ##
 Here is the AI in action:
 
-![Screenshot](https://github.com/Tw1ddle/NeedsAI/blob/master/screenshots/screenshot0.png?raw=true "Need-based AI screenshot 1")
+![Screenshot](https://github.com/Tw1ddle/needs-ai/blob/master/screenshots/screenshot0.png?raw=true "Need-based AI screenshot 1")
 
-![Screenshot](https://github.com/Tw1ddle/NeedsAI/blob/master/screenshots/screenshot1.png?raw=true "Need-based AI screenshot 2")
+![Screenshot](https://github.com/Tw1ddle/needs-ai/blob/master/screenshots/screenshot1.png?raw=true "Need-based AI screenshot 2")
 
 ## How It Works ##
 The need-based AI is modelled as a set of needs, a set of actions, and a strategy that executes actions to meet the needs. As time passes, the urgency of needs change.
