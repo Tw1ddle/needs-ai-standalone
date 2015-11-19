@@ -11,7 +11,6 @@ using util.ArrayExtensions;
 class Brain {
 	public var world(default, null):Dynamic;
 	public var needs(default, null):Array<Need>; // Reasons for doing stuff
-	
 	public var needTraits(default, null):IntMap<Float->Float>; // Motive traits affect the way some motives change over time e.g. slobs get hungrier faster
 	public var actionTraits(default, null):IntMap<Float->Float>; // Action traits affect the way actions are calculated e.g. override or modify effects
 	
@@ -21,17 +20,18 @@ class Brain {
 		this.world = world;
 		this.needs = needs;
 		needTraits = new IntMap<Float->Float>();
+		actionTraits = new IntMap<Float->Float>();
 	}
 	
-	public function act(action:Action):Void {		
+	public function act(action:Action):Void {
 		for (effect in action.effects) {
 			effect.effect(world);
 		}
 	}
 	
 	public function update(dt:Float):Void {
-		for (motive in needs) {
-			motive.update(dt);
+		for (need in needs) {
+			need.update(dt);
 		}
 		
 		var need = switch(world.agent.aiMode) {
@@ -46,7 +46,8 @@ class Brain {
 		}
 		
 		if (need != null) {
-			actOnNeed(need);
+			var actions = findActions(need);
+			signal_selectedAction.dispatch(actions.randomElement());
 		}
 	}
 	
@@ -70,12 +71,8 @@ class Brain {
 		return needs.randomElement();
 	}
 	
-	private inline function actOnNeed(need:Need):Void {		
-		var actions = findActions(need);
-		signal_selectedAction.dispatch(actions.randomElement());
-	}
-	
 	private inline function findActions(need:Need):Array<Action> {
+		Sure.sure(world.queryContextForActions != null);
 		return world.queryContextForActions(need);
 	}
 }

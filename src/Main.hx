@@ -36,7 +36,7 @@ class Main {
 		Browser.window.onload = onWindowLoaded;
 	}
 	
-	private inline function onWindowLoaded():Void {	
+	private inline function onWindowLoaded():Void {
 		world = new World();
 		createTerminal();
 		generateActionButtons();
@@ -70,7 +70,7 @@ class Main {
 			if (world.minutes >= 60 * 24) {
 				world.gameover = true;
 				world.clock.stop();
-				Terminal.echo("Time's up. Better start looking for a job...");
+				Terminal.echo("Time's up...");
 			}
 		}
 	}

@@ -33,11 +33,40 @@ var Location = function(tag,description) {
 };
 Location.__name__ = true;
 var Desk = function(world) {
+	var _g = this;
 	Location.call(this,"Desktop","The old rig, designed for a hacker on steroids");
+	this.tasks = [{ descriptions : ["You clear out your emails. George Schulz has sent you 44 new messsages about penis enlargement solutions."], effects : function(brain) {
+		var _g1 = brain.needs[0];
+		_g1.set_value(_g1.value - 0.3);
+	}},{ descriptions : ["You check your Facebook profile. Two new notifications."], effects : function(brain1) {
+		var _g2 = brain1.needs[0];
+		_g2.set_value(_g2.value - 0.4);
+	}},{ descriptions : ["You watch an amusing video of an acrobatic cat."], effects : function(brain2) {
+		var _g3 = brain2.needs[0];
+		_g3.set_value(_g3.value - 0.3);
+	}},{ descriptions : ["You post an angry rant about the state of student politics today."], effects : function(brain3) {
+		var _g4 = brain3.needs[0];
+		_g4.set_value(_g4.value - 0.3);
+	}},{ descriptions : ["You offend someone who disagrees with you on Twitter."], effects : function(brain4) {
+		var _g5 = brain4.needs[0];
+		_g5.set_value(_g5.value - 0.4);
+	}},{ descriptions : ["You browse a gallery of awkward family photos."], effects : function(brain5) {
+		var _g6 = brain5.needs[0];
+		_g6.set_value(_g6.value - 0.3);
+	}},{ descriptions : ["You watch a video starring an anthropomorphic talking dog."], effects : function(brain6) {
+		var _g7 = brain6.needs[0];
+		_g7.set_value(_g7.value - 0.4);
+	}},{ descriptions : ["You read the daily Dilbert comic."], effects : function(brain7) {
+		var _g8 = brain7.needs[0];
+		_g8.set_value(_g8.value - 0.5);
+	}},{ descriptions : ["You click on some clickbait ads."], effects : function(brain8) {
+		var _g9 = brain8.needs[0];
+		_g9.set_value(_g9.value - 0.2);
+	}}];
 	this.actions.push(new TriggerAction(0,["computer"],8,[{ id : 0, effect : function(world1) {
-		terminal.echo("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
-		var _g = world1.agent.brain.needs[0];
-		_g.set_value(_g.value - 0.2);
+		var item = util_ArrayExtensions.randomElement(_g.tasks);
+		terminal.echo(util_ArrayExtensions.randomElement(item.descriptions));
+		item.effects(world1.agent.brain);
 	}}]));
 };
 Desk.__name__ = true;
@@ -54,31 +83,75 @@ var Fridge = function(world) {
 		_g2.set_value(_g2.value + 0.1);
 		var _g3 = brain.needs[3];
 		_g3.set_value(_g3.value - 0.05);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain1) {
+	}},{ name : "pack of stale biscuits", descriptions : ["They look like they've been open for months"], effects : function(brain1) {
 		var _g4 = brain1.needs[2];
-		_g4.set_value(_g4.value - 0.2);
+		_g4.set_value(_g4.value - 0.1);
 		var _g5 = brain1.needs[4];
-		_g5.set_value(_g5.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain2) {
+		_g5.set_value(_g5.value + 0.03);
+	}},{ name : "baked potato with green fur", descriptions : ["A rancid smell emanates from it"], effects : function(brain2) {
 		var _g6 = brain2.needs[2];
-		_g6.set_value(_g6.value - 0.2);
+		_g6.set_value(_g6.value - 0.3);
 		var _g7 = brain2.needs[4];
 		_g7.set_value(_g7.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain3) {
+	}},{ name : "bag of disintegrating salad", descriptions : ["It gives off a noxious, sour odour"], effects : function(brain3) {
 		var _g8 = brain3.needs[2];
-		_g8.set_value(_g8.value - 0.2);
+		_g8.set_value(_g8.value - 0.4);
 		var _g9 = brain3.needs[4];
 		_g9.set_value(_g9.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain4) {
+	}},{ name : "mouldy cheese", descriptions : ["It's hard and tasteless"], effects : function(brain4) {
 		var _g10 = brain4.needs[2];
-		_g10.set_value(_g10.value - 0.2);
+		_g10.set_value(_g10.value - 0.3);
 		var _g11 = brain4.needs[4];
 		_g11.set_value(_g11.value + 0.1);
+	}},{ name : "shrivelled apple", descriptions : ["It smells worse than a septic tank"], effects : function(brain5) {
+		var _g12 = brain5.needs[2];
+		_g12.set_value(_g12.value - 0.5);
+		var _g13 = brain5.needs[4];
+		_g13.set_value(_g13.value + 0.1);
+	}},{ name : "suspicious fish", descriptions : ["Stinks of... fish"], effects : function(brain6) {
+		var _g14 = brain6.needs[2];
+		_g14.set_value(_g14.value - 0.7);
+		var _g15 = brain6.needs[4];
+		_g15.set_value(_g15.value + 0.1);
+	}},{ name : "milk-spattered lettuce", descriptions : ["Looks and smells toxic"], effects : function(brain7) {
+		var _g16 = brain7.needs[2];
+		_g16.set_value(_g16.value - 0.4);
+		var _g17 = brain7.needs[4];
+		_g17.set_value(_g17.value + 0.1);
+	}},{ name : "raw chicken", descriptions : ["It has a slightly green tinge"], effects : function(brain8) {
+		var _g18 = brain8.needs[2];
+		_g18.set_value(_g18.value - 0.2);
+		var _g19 = brain8.needs[4];
+		_g19.set_value(_g19.value + 0.1);
+	}},{ name : "bowl of steamed rice", descriptions : ["It was left in the rice cooker for a few weeks"], effects : function(brain9) {
+		var _g20 = brain9.needs[2];
+		_g20.set_value(_g20.value - 0.5);
+		var _g21 = brain9.needs[4];
+		_g21.set_value(_g21.value + 0.1);
+	}},{ name : "pound of ground beef", descriptions : ["Looks as if a small animal has been gnawing on it"], effects : function(brain10) {
+		var _g22 = brain10.needs[2];
+		_g22.set_value(_g22.value - 0.2);
+		var _g23 = brain10.needs[4];
+		_g23.set_value(_g23.value + 0.1);
+	}},{ name : "broccoli cassrole", descriptions : ["Several weeks old"], effects : function(brain11) {
+		var _g24 = brain11.needs[2];
+		_g24.set_value(_g24.value - 0.4);
+		var _g25 = brain11.needs[4];
+		_g25.set_value(_g25.value + 0.1);
+	}},{ name : "dish of burnt refried beans", descriptions : ["They have a smoky carbonized aroma"], effects : function(brain12) {
+		var _g26 = brain12.needs[2];
+		_g26.set_value(_g26.value - 0.3);
+		var _g27 = brain12.needs[4];
+		_g27.set_value(_g27.value + 0.1);
+	}},{ name : "pint-glass of rancid milk", descriptions : ["There's something swimming in it"], effects : function(brain13) {
+		var _g28 = brain13.needs[2];
+		_g28.set_value(_g28.value - 0.3);
+		var _g29 = brain13.needs[4];
+		_g29.set_value(_g29.value + 0.1);
 	}}];
 	this.actions.push(new TriggerAction(2,["eat"],10,[{ id : 2, effect : function(world1) {
-		terminal.echo("You " + util_ArrayExtensions.randomElement(Strings.walkingAdjective) + " to the fridge and grab the first thing you see... ");
 		var item = util_ArrayExtensions.randomElement(_g.foods);
-		terminal.echo("It's a " + item.name + ". " + util_ArrayExtensions.randomElement(item.descriptions) + ". You " + util_ArrayExtensions.randomElement(Strings.eatingDescription) + ".");
+		terminal.echo("You " + util_ArrayExtensions.randomElement(Strings.walkingAdjective) + " to the fridge and grab the first thing you see... It's a " + item.name + ". " + util_ArrayExtensions.randomElement(item.descriptions) + ". You " + util_ArrayExtensions.randomElement(Strings.eatingDescription) + ".");
 		item.effects(world1.agent.brain);
 	}}]));
 };
@@ -102,8 +175,8 @@ Bed.prototype = $extend(Location.prototype,{
 var Shower = function(world) {
 	Location.call(this,"Shower","The shower.");
 	this.actions.push(new TriggerAction(3,["shower"],15,[{ id : 3, effect : function(world1) {
-		terminal.echo("You wash the filth off your body.");
-		var clean = 0.3;
+		terminal.echo(util_ArrayExtensions.randomElement(Strings.showeringDescription));
+		var clean = 0.4 + Math.random() * 0.5;
 		var _g = world1.agent.brain.needs[3];
 		_g.set_value(_g.value - clean);
 	}}]));
@@ -167,7 +240,7 @@ Main.prototype = {
 			if(this.world.minutes >= 1440) {
 				this.world.gameover = true;
 				this.world.clock.stop();
-				terminal.echo("Time's up. Better start looking for a job...");
+				terminal.echo("Time's up...");
 			}
 		}
 	}
@@ -409,11 +482,11 @@ var World = function() {
 	this.context.add(new Shower(this));
 	this.context.add(new Toilet(this));
 	var needs = [];
-	needs.push(new ai_Need(0,0.20,0.03,1.0,null,"Boredom"));
-	needs.push(new ai_Need(1,0.07,0.01,1.0,null,"Tiredness"));
-	needs.push(new ai_Need(2,0.25,0.04,1.0,null,"Hunger"));
+	needs.push(new ai_Need(0,0.20,0.10,1.0,null,"Boredom"));
+	needs.push(new ai_Need(1,0.07,0.04,1.0,null,"Tiredness"));
+	needs.push(new ai_Need(2,0.25,0.10,1.0,null,"Hunger"));
 	needs.push(new ai_Need(3,0.10,0.02,1.0,null,"Hygiene"));
-	needs.push(new ai_Need(4,0.30,0.03,1.0,null,"Bladder"));
+	needs.push(new ai_Need(4,0.30,0.02,1.0,null,"Bladder"));
 	this.agent = new Agent(new ai_Brain(this,needs));
 };
 World.__name__ = true;
@@ -463,6 +536,7 @@ var ai_Brain = function(world,needs) {
 	this.world = world;
 	this.needs = needs;
 	this.needTraits = new haxe_ds_IntMap();
+	this.actionTraits = new haxe_ds_IntMap();
 };
 ai_Brain.__name__ = true;
 ai_Brain.prototype = {
@@ -479,9 +553,9 @@ ai_Brain.prototype = {
 		var _g = 0;
 		var _g1 = this.needs;
 		while(_g < _g1.length) {
-			var motive = _g1[_g];
+			var need1 = _g1[_g];
 			++_g;
-			motive.update(dt);
+			need1.update(dt);
 		}
 		var need;
 		var _g2 = this.world.agent.aiMode;
@@ -498,7 +572,21 @@ ai_Brain.prototype = {
 		default:
 			need = null;
 		}
-		if(need != null) this.actOnNeed(need);
+		if(need != null) {
+			var actions;
+			actions = (function($this) {
+				var $r;
+				if(!($this.world.queryContextForActions != null)) throw new js__$Boot_HaxeError("FAIL: world.queryContextForActions != null");
+				$r = $this.world.queryContextForActions(need);
+				return $r;
+			}(this));
+			this.signal_selectedAction.dispatch((function($this) {
+				var $r;
+				if(!(actions != null && actions.length != 0)) throw new js__$Boot_HaxeError("FAIL: array != null && array.length != 0");
+				$r = actions[Std.random(actions.length)];
+				return $r;
+			}(this)));
+		}
 	}
 	,getGreatestNeed: function() {
 		var idx = 0;
@@ -520,16 +608,8 @@ ai_Brain.prototype = {
 	,getRandomNeed: function() {
 		return util_ArrayExtensions.randomElement(this.needs);
 	}
-	,actOnNeed: function(need) {
-		var actions = this.world.queryContextForActions(need);
-		this.signal_selectedAction.dispatch((function($this) {
-			var $r;
-			if(!(actions != null && actions.length != 0)) throw new js__$Boot_HaxeError("FAIL: array != null && array.length != 0");
-			$r = actions[Std.random(actions.length)];
-			return $r;
-		}(this)));
-	}
 	,findActions: function(need) {
+		if(!(this.world.queryContextForActions != null)) throw new js__$Boot_HaxeError("FAIL: world.queryContextForActions != null");
 		return this.world.queryContextForActions(need);
 	}
 };
@@ -1092,7 +1172,8 @@ String.__name__ = true;
 Array.__name__ = true;
 msignal_SlotList.NIL = new msignal_SlotList(null,null);
 Strings.walkingAdjective = ["shuffle","waddle","dodder","shamble","lurch","stumble","reel","stagger"];
-Strings.eatingDescription = ["wolf it down","gobble it greedily","feast on it","voraciously scarf it down"];
+Strings.eatingDescription = ["wolf it down","gobble it greedily","feast on it","voraciously scarf it down","gag on it as it goes down","burp in satisfaction","choke it down","swallow it whole"];
+Strings.showeringDescription = ["You scrub up and delouse in the shower.","You do your ablutions. The mouldy shower curtain catches you on your way out.","You take a long soak in the shower and groom your nose hair."];
 Strings.unrecognizedCommand = ["You flail uselessly."];
 js_d3__$D3_InitPriority.important = "important";
 Main.main();

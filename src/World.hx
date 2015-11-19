@@ -58,11 +58,11 @@ class World {
 		context.add(new Toilet(this));
 		
 		var needs = new Array<Need>();
-		needs.push(new Need(NeedId.LULZ, 0.20, 0.03, 1.0, "Boredom"));
-		needs.push(new Need(NeedId.TIREDNESS, 0.07, 0.01, 1.0, "Tiredness"));
-		needs.push(new Need(NeedId.HUNGER, 0.25, 0.04, 1.0, "Hunger"));
+		needs.push(new Need(NeedId.LULZ, 0.20, 0.10, 1.0, "Boredom"));
+		needs.push(new Need(NeedId.TIREDNESS, 0.07, 0.04, 1.0, "Tiredness"));
+		needs.push(new Need(NeedId.HUNGER, 0.25, 0.10, 1.0, "Hunger"));
 		needs.push(new Need(NeedId.HYGIENE, 0.10, 0.02, 1.0, "Hygiene"));
-		needs.push(new Need(NeedId.BLADDER, 0.30, 0.03, 1.0, "Bladder"));
+		needs.push(new Need(NeedId.BLADDER, 0.30, 0.02, 1.0, "Bladder"));
 		agent = new Agent(new Brain(this, needs));
 	}
 	
