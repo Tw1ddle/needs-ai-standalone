@@ -33,9 +33,40 @@ var Location = function(tag,description) {
 };
 Location.__name__ = true;
 var Desk = function(world) {
+	var _g = this;
 	Location.call(this,"Desktop","The old rig, designed for a hacker on steroids");
+	this.tasks = [{ descriptions : ["You clear out your emails. George Schulz has sent you 44 new messsages about penis enlargement solutions."], effects : function(brain) {
+		var _g1 = brain.needs[0];
+		_g1.set_value(_g1.value - 0.3);
+	}},{ descriptions : ["You check your Facebook profile. Two new notifications."], effects : function(brain1) {
+		var _g2 = brain1.needs[0];
+		_g2.set_value(_g2.value - 0.4);
+	}},{ descriptions : ["You watch an amusing video of an acrobatic cat."], effects : function(brain2) {
+		var _g3 = brain2.needs[0];
+		_g3.set_value(_g3.value - 0.3);
+	}},{ descriptions : ["You post an angry rant about the state of student politics today."], effects : function(brain3) {
+		var _g4 = brain3.needs[0];
+		_g4.set_value(_g4.value - 0.3);
+	}},{ descriptions : ["You offend someone who disagrees with you on Twitter."], effects : function(brain4) {
+		var _g5 = brain4.needs[0];
+		_g5.set_value(_g5.value - 0.4);
+	}},{ descriptions : ["You browse a gallery of awkward family photos."], effects : function(brain5) {
+		var _g6 = brain5.needs[0];
+		_g6.set_value(_g6.value - 0.3);
+	}},{ descriptions : ["You watch a video starring an anthropomorphic talking dog."], effects : function(brain6) {
+		var _g7 = brain6.needs[0];
+		_g7.set_value(_g7.value - 0.4);
+	}},{ descriptions : ["You read the daily Dilbert comic."], effects : function(brain7) {
+		var _g8 = brain7.needs[0];
+		_g8.set_value(_g8.value - 0.5);
+	}},{ descriptions : ["You click on some clickbait ads."], effects : function(brain8) {
+		var _g9 = brain8.needs[0];
+		_g9.set_value(_g9.value - 0.2);
+	}}];
 	this.actions.push(new TriggerAction(0,["computer"],8,[{ id : 0, effect : function(world1) {
-		terminal.echo("You turn to your desktop, the page is open and ready. You salivate in anticipation.");
+		var item = util_ArrayExtensions.randomElement(_g.tasks);
+		terminal.echo(util_ArrayExtensions.randomElement(item.descriptions));
+		item.effects(world1.agent.brain);
 	}}]));
 };
 Desk.__name__ = true;
@@ -52,31 +83,75 @@ var Fridge = function(world) {
 		_g2.set_value(_g2.value + 0.1);
 		var _g3 = brain.needs[3];
 		_g3.set_value(_g3.value - 0.05);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain1) {
+	}},{ name : "pack of stale biscuits", descriptions : ["They look like they've been open for months"], effects : function(brain1) {
 		var _g4 = brain1.needs[2];
-		_g4.set_value(_g4.value - 0.2);
+		_g4.set_value(_g4.value - 0.1);
 		var _g5 = brain1.needs[4];
-		_g5.set_value(_g5.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain2) {
+		_g5.set_value(_g5.value + 0.03);
+	}},{ name : "baked potato with green fur", descriptions : ["A rancid smell emanates from it"], effects : function(brain2) {
 		var _g6 = brain2.needs[2];
-		_g6.set_value(_g6.value - 0.2);
+		_g6.set_value(_g6.value - 0.3);
 		var _g7 = brain2.needs[4];
 		_g7.set_value(_g7.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain3) {
+	}},{ name : "bag of disintegrating salad", descriptions : ["It gives off a noxious, sour odour"], effects : function(brain3) {
 		var _g8 = brain3.needs[2];
-		_g8.set_value(_g8.value - 0.2);
+		_g8.set_value(_g8.value - 0.4);
 		var _g9 = brain3.needs[4];
 		_g9.set_value(_g9.value + 0.1);
-	}},{ name : "tin of beans", descriptions : ["It says best before June 2012"], effects : function(brain4) {
+	}},{ name : "mouldy cheese", descriptions : ["It's hard and tasteless"], effects : function(brain4) {
 		var _g10 = brain4.needs[2];
-		_g10.set_value(_g10.value - 0.2);
+		_g10.set_value(_g10.value - 0.3);
 		var _g11 = brain4.needs[4];
 		_g11.set_value(_g11.value + 0.1);
+	}},{ name : "shrivelled apple", descriptions : ["It smells worse than a septic tank"], effects : function(brain5) {
+		var _g12 = brain5.needs[2];
+		_g12.set_value(_g12.value - 0.5);
+		var _g13 = brain5.needs[4];
+		_g13.set_value(_g13.value + 0.1);
+	}},{ name : "suspicious fish", descriptions : ["Stinks of... fish"], effects : function(brain6) {
+		var _g14 = brain6.needs[2];
+		_g14.set_value(_g14.value - 0.7);
+		var _g15 = brain6.needs[4];
+		_g15.set_value(_g15.value + 0.1);
+	}},{ name : "milk-spattered lettuce", descriptions : ["Looks and smells toxic"], effects : function(brain7) {
+		var _g16 = brain7.needs[2];
+		_g16.set_value(_g16.value - 0.4);
+		var _g17 = brain7.needs[4];
+		_g17.set_value(_g17.value + 0.1);
+	}},{ name : "raw chicken", descriptions : ["It has a slightly green tinge"], effects : function(brain8) {
+		var _g18 = brain8.needs[2];
+		_g18.set_value(_g18.value - 0.2);
+		var _g19 = brain8.needs[4];
+		_g19.set_value(_g19.value + 0.1);
+	}},{ name : "bowl of steamed rice", descriptions : ["It was left in the rice cooker for a few weeks"], effects : function(brain9) {
+		var _g20 = brain9.needs[2];
+		_g20.set_value(_g20.value - 0.5);
+		var _g21 = brain9.needs[4];
+		_g21.set_value(_g21.value + 0.1);
+	}},{ name : "pound of ground beef", descriptions : ["Looks as if a small animal has been gnawing on it"], effects : function(brain10) {
+		var _g22 = brain10.needs[2];
+		_g22.set_value(_g22.value - 0.2);
+		var _g23 = brain10.needs[4];
+		_g23.set_value(_g23.value + 0.1);
+	}},{ name : "broccoli cassrole", descriptions : ["Several weeks old"], effects : function(brain11) {
+		var _g24 = brain11.needs[2];
+		_g24.set_value(_g24.value - 0.4);
+		var _g25 = brain11.needs[4];
+		_g25.set_value(_g25.value + 0.1);
+	}},{ name : "dish of burnt refried beans", descriptions : ["They have a smoky carbonized aroma"], effects : function(brain12) {
+		var _g26 = brain12.needs[2];
+		_g26.set_value(_g26.value - 0.3);
+		var _g27 = brain12.needs[4];
+		_g27.set_value(_g27.value + 0.1);
+	}},{ name : "pint-glass of rancid milk", descriptions : ["There's something swimming in it"], effects : function(brain13) {
+		var _g28 = brain13.needs[2];
+		_g28.set_value(_g28.value - 0.3);
+		var _g29 = brain13.needs[4];
+		_g29.set_value(_g29.value + 0.1);
 	}}];
 	this.actions.push(new TriggerAction(2,["eat"],10,[{ id : 2, effect : function(world1) {
-		terminal.echo("You " + util_ArrayExtensions.randomElement(Strings.walkingAdjective) + " to the fridge and grab the first thing you see... ");
 		var item = util_ArrayExtensions.randomElement(_g.foods);
-		terminal.echo("It's a " + item.name + ". " + util_ArrayExtensions.randomElement(item.descriptions) + ". You " + util_ArrayExtensions.randomElement(Strings.eatingDescription) + ".");
+		terminal.echo("You " + util_ArrayExtensions.randomElement(Strings.walkingAdjective) + " to the fridge and grab the first thing you see... It's a " + item.name + ". " + util_ArrayExtensions.randomElement(item.descriptions) + ". You " + util_ArrayExtensions.randomElement(Strings.eatingDescription) + ".");
 		item.effects(world1.agent.brain);
 	}}]));
 };
@@ -88,6 +163,9 @@ var Bed = function(world) {
 	Location.call(this,"Bed","The old bed");
 	this.actions.push(new TriggerAction(1,["sleep"],40,[{ id : 1, effect : function(world1) {
 		terminal.echo("You settle down for forty winks.");
+		var rest = Math.random() * 0.5 + 0.3;
+		var _g = world1.agent.brain.needs[1];
+		_g.set_value(_g.value - rest);
 	}}]));
 };
 Bed.__name__ = true;
@@ -97,7 +175,10 @@ Bed.prototype = $extend(Location.prototype,{
 var Shower = function(world) {
 	Location.call(this,"Shower","The shower.");
 	this.actions.push(new TriggerAction(3,["shower"],15,[{ id : 3, effect : function(world1) {
-		terminal.echo("You wash the filth off your body.");
+		terminal.echo(util_ArrayExtensions.randomElement(Strings.showeringDescription));
+		var clean = 0.4 + Math.random() * 0.5;
+		var _g = world1.agent.brain.needs[3];
+		_g.set_value(_g.value - clean);
 	}}]));
 };
 Shower.__name__ = true;
@@ -108,27 +189,17 @@ var Toilet = function(world) {
 	Location.call(this,"Toilet","The toilet.");
 	this.actions.push(new TriggerAction(4,["toilet"],5,[{ id : 4, effect : function(world1) {
 		terminal.echo("You relieve yourself.");
+		var _g = world1.agent.brain.needs[4];
+		_g.set_value(_g.value - 1.0);
 	}}]));
 };
 Toilet.__name__ = true;
 Toilet.__super__ = Location;
 Toilet.prototype = $extend(Location.prototype,{
 });
-var ai_Action = function(id,duration,effects) {
-	this.id = id;
-	this.duration = duration;
-	this.effects = effects;
-};
-ai_Action.__name__ = true;
-var TriggerAction = function(id,trigger,duration,effects) {
-	ai_Action.call(this,id,duration,effects);
-	this.trigger = trigger;
-};
-TriggerAction.__name__ = true;
-TriggerAction.__super__ = ai_Action;
-TriggerAction.prototype = $extend(ai_Action.prototype,{
-});
 var Main = function() {
+	this.signal_consoleActionIssued = new msignal_Signal1();
+	this.signal_actionButtonPressed = new msignal_Signal1();
 	window.onload = $bind(this,this.onWindowLoaded);
 };
 Main.__name__ = true;
@@ -137,51 +208,58 @@ Main.main = function() {
 };
 Main.prototype = {
 	onWindowLoaded: function() {
-		this.gameover = false;
 		this.world = new World();
-		this.generateTerminal();
+		this.createTerminal();
 		this.generateActionButtons();
-		this.generateSettingsButtons();
+		this.generateSliders();
 		this.generateGraphs();
+		this.connectStrategySelection();
 		this.updateHandle = null;
 		this.set_updateInterval(1000);
+		this.signal_actionButtonPressed.add($bind(this,this.handleAction));
+		this.signal_consoleActionIssued.add($bind(this,this.handleAction));
+		this.world.agent.brain.signal_selectedAction.add($bind(this,this.handleAction));
 	}
 	,update: function() {
-		var _g = this.world;
-		_g.set_minutes(_g.minutes + 1);
-		this.world.update(1);
-		var $it0 = this.graphs.iterator();
-		while( $it0.hasNext() ) {
-			var graph = $it0.next();
-			var _g1 = 0;
-			var _g11 = this.world.agent.brain.needs;
-			while(_g1 < _g11.length) {
-				var motive = _g11[_g1];
-				++_g1;
-				var graph1 = this.graphs.h[motive.id];
-				graph1.addData({ time : this.world.minutes, value : motive.value},this.world.minutes);
+		if(!this.world.gameover) {
+			var _g = this.world;
+			_g.set_minutes(_g.minutes + 1);
+			this.world.update(1);
+			var $it0 = this.graphs.iterator();
+			while( $it0.hasNext() ) {
+				var graph = $it0.next();
+				var _g1 = 0;
+				var _g11 = this.world.agent.brain.needs;
+				while(_g1 < _g11.length) {
+					var motive = _g11[_g1];
+					++_g1;
+					var graph1 = this.graphs.h[motive.id];
+					graph1.addData({ time : this.world.minutes, value : motive.value},this.world.minutes);
+				}
 			}
-		}
-		if(this.world.minutes >= 1440) {
-			this.gameover = true;
-			this.world.clock.stop();
-			terminal.echo("Time's up. Better start looking for a job...");
+			if(this.world.minutes >= 1440) {
+				this.world.gameover = true;
+				this.world.clock.stop();
+				terminal.echo("Time's up...");
+			}
 		}
 	}
 	,handleAction: function(action) {
-		this.world.agent.act(action);
-		var _g = this.world;
-		_g.set_minutes(_g.minutes + action.duration);
-		var _g1 = 0;
-		var _g11 = action.effects;
-		while(_g1 < _g11.length) {
-			var effect = _g11[_g1];
-			++_g1;
-			var graph = this.graphs.h[effect.id];
-			graph.addData({ time : this.world.minutes, value : this.world.agent.brain.needs[effect.id].value},this.world.minutes);
+		if(!this.world.gameover) {
+			this.world.agent.act(action);
+			var _g = this.world;
+			_g.set_minutes(_g.minutes + action.duration);
+			var _g1 = 0;
+			var _g11 = action.effects;
+			while(_g1 < _g11.length) {
+				var effect = _g11[_g1];
+				++_g1;
+				var graph = this.graphs.h[effect.id];
+				graph.addData({ time : this.world.minutes, value : this.world.agent.brain.needs[effect.id].value},this.world.minutes);
+			}
 		}
 	}
-	,generateTerminal: function() {
+	,createTerminal: function() {
 		var _g = this;
 		terminal.push(function(command,terminal) {
 			var recognizedCommand = false;
@@ -206,7 +284,7 @@ Main.prototype = {
 					}
 					if(action.trigger.length != 0 && containsParts) {
 						recognizedCommand = true;
-						_g.handleAction(action);
+						_g.signal_consoleActionIssued.dispatch(action);
 					}
 				}
 			}
@@ -233,24 +311,46 @@ Main.prototype = {
 				actions.appendChild(btn);
 				btn.onclick = (function(action) {
 					return function() {
-						_g2.handleAction(action[0]);
+						_g2.signal_actionButtonPressed.dispatch(action[0]);
 					};
 				})(action);
 			}
 		}
 	}
-	,generateSettingsButtons: function() {
-		var _g = this;
-		var settings = window.document.getElementById("settings");
-		var btn = window.document.createElement("button");
-		var t = window.document.createTextNode("toggle AI");
-		btn.appendChild(t);
-		settings.appendChild(btn);
-		btn.onclick = function() {
-			_g.world.agent.autonomous = !_g.world.agent.autonomous;
-		};
-	}
 	,generateSliders: function() {
+		var _g = this;
+		this.updateRateElement = window.document.getElementById("clockspeed");
+		noUiSlider.create(this.updateRateElement,{ connect : "lower", start : 1, range : { 'min' : [0,0.1], 'max' : 10}, format : new wNumb({ decimals : 1}), pips : { mode : "range", density : 10}});
+		this.createTooltips(this.updateRateElement);
+		this.updateRateElement.noUiSlider.on("change",function(values,handle,rawValues) {
+			_g.set_updateInterval(1000 / values[handle] | 0);
+		});
+		this.updateRateElement.noUiSlider.on("update",function(values1,handle1,rawValues1) {
+			_g.updateTooltips(_g.updateRateElement,handle1,values1[handle1]);
+		});
+	}
+	,connectStrategySelection: function() {
+		var _g = this;
+		this.strategyElement = window.document.getElementById("strategy");
+		this.strategyElement.addEventListener("change",function() {
+			if(_g.strategyElement.value != null) _g.world.agent.aiMode = _g.strategyElement.value;
+		},false);
+	}
+	,createTooltips: function(slider) {
+		var tipHandles = slider.getElementsByClassName("noUi-handle");
+		var _g1 = 0;
+		var _g = tipHandles.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var div = window.document.createElement("div");
+			div.className += "tooltip";
+			tipHandles[i].appendChild(div);
+			this.updateTooltips(slider,i,0);
+		}
+	}
+	,updateTooltips: function(slider,handleIdx,value) {
+		var tipHandles = slider.getElementsByClassName("noUi-handle");
+		tipHandles[handleIdx].innerHTML = "<span class='tooltip'>" + (value == null?"null":"" + value) + "</span>";
 	}
 	,generateGraphs: function() {
 		this.graphs = new haxe_ds_IntMap();
@@ -259,7 +359,7 @@ Main.prototype = {
 		while(_g < _g1.length) {
 			var motive = _g1[_g];
 			++_g;
-			var graph = new NeedGraph(motive,[{ time : 0, value : motive.value}],"#graphs",200,100);
+			var graph = new NeedGraph(motive,[{ time : 0, value : motive.value}],"#graphs",150,100);
 			this.graphs.h[motive.id] = graph;
 		}
 	}
@@ -269,6 +369,20 @@ Main.prototype = {
 		return time;
 	}
 };
+var ai_Action = function(id,duration,effects) {
+	this.id = id;
+	this.duration = duration;
+	this.effects = effects;
+};
+ai_Action.__name__ = true;
+var TriggerAction = function(id,trigger,duration,effects) {
+	ai_Action.call(this,id,duration,effects);
+	this.trigger = trigger;
+};
+TriggerAction.__name__ = true;
+TriggerAction.__super__ = ai_Action;
+TriggerAction.prototype = $extend(ai_Action.prototype,{
+});
 Math.__name__ = true;
 var NeedGraph = function(need,data,elementId,width,height) {
 	this.maxY = 1;
@@ -323,6 +437,16 @@ NeedGraph.prototype = {
 		this.updateData(worldMinutes);
 	}
 };
+var Reflect = function() { };
+Reflect.__name__ = true;
+Reflect.isFunction = function(f) {
+	return typeof(f) == "function" && !(f.__name__ || f.__ename__);
+};
+Reflect.compareMethods = function(f1,f2) {
+	if(f1 == f2) return true;
+	if(!Reflect.isFunction(f1) || !Reflect.isFunction(f2)) return false;
+	return f1.scope == f2.scope && f1.method == f2.method && f1.method != null;
+};
 var Std = function() { };
 Std.__name__ = true;
 Std.random = function(x) {
@@ -335,7 +459,7 @@ StringTools.replace = function(s,sub,by) {
 };
 var Agent = function(brain) {
 	this.brain = brain;
-	this.autonomous = false;
+	this.aiMode = "highest_needs";
 };
 Agent.__name__ = true;
 Agent.prototype = {
@@ -347,41 +471,72 @@ Agent.prototype = {
 	}
 };
 var World = function() {
-	this.livesRuined = 0;
-	this.feelingsHurt = 0;
+	this.clock = new FlipClock.Factory(window.document.getElementById("time"));
+	this.clock.stop();
 	this.set_minutes(0);
-	this.lastUpdateMinutes = 0;
-	var needs = [];
-	needs.push(new ai_Need(0,0.50,0.03,1.0,null,"Boredom"));
-	needs.push(new ai_Need(1,0.07,0.01,1.0,null,"Tiredness"));
-	needs.push(new ai_Need(2,0.5,0.04,1.0,null,"Hunger"));
-	needs.push(new ai_Need(3,0.3,0.06,1.0,null,"Hygiene"));
-	needs.push(new ai_Need(4,0.5,0.07,1.0,null,"Bladder"));
-	this.agent = new Agent(new ai_Brain(this,needs));
-	this.actions = [];
+	this.gameover = false;
 	this.context = new haxe_ds_GenericStack();
 	this.context.add(new Desk(this));
 	this.context.add(new Bed(this));
 	this.context.add(new Fridge(this));
 	this.context.add(new Shower(this));
 	this.context.add(new Toilet(this));
-	this.clock = new FlipClock.Factory(window.document.getElementById("time"));
-	this.clock.stop();
+	var needs = [];
+	needs.push(new ai_Need(0,0.20,0.10,1.0,null,"Boredom"));
+	needs.push(new ai_Need(1,0.07,0.04,1.0,null,"Tiredness"));
+	needs.push(new ai_Need(2,0.25,0.10,1.0,null,"Hunger"));
+	needs.push(new ai_Need(3,0.10,0.02,1.0,null,"Hygiene"));
+	needs.push(new ai_Need(4,0.30,0.02,1.0,null,"Bladder"));
+	this.agent = new Agent(new ai_Brain(this,needs));
 };
 World.__name__ = true;
 World.prototype = {
 	update: function(dt) {
 		this.agent.update(dt);
+		var _g = 0;
+		var _g1 = this.agent.brain.needs;
+		while(_g < _g1.length) {
+			var need = _g1[_g];
+			++_g;
+			if(need.value >= 1.0) this.gameover = true;
+		}
 	}
 	,set_minutes: function(min) {
 		if(this.clock != null) this.clock.setTime(min * 60);
 		return this.minutes = min;
 	}
+	,queryContextForActions: function(need) {
+		var actions = [];
+		var $it0 = this.context.iterator();
+		while( $it0.hasNext() ) {
+			var location = $it0.next();
+			var _g = 0;
+			var _g1 = location.actions;
+			while(_g < _g1.length) {
+				var action = _g1[_g];
+				++_g;
+				var addedAction = false;
+				var _g2 = 0;
+				var _g3 = action.effects;
+				while(_g2 < _g3.length) {
+					var effect = _g3[_g2];
+					++_g2;
+					if(need.id == effect.id) {
+						actions.push(action);
+						break;
+					}
+				}
+			}
+		}
+		return actions;
+	}
 };
 var ai_Brain = function(world,needs) {
+	this.signal_selectedAction = new msignal_Signal1();
 	this.world = world;
 	this.needs = needs;
 	this.needTraits = new haxe_ds_IntMap();
+	this.actionTraits = new haxe_ds_IntMap();
 };
 ai_Brain.__name__ = true;
 ai_Brain.prototype = {
@@ -392,27 +547,80 @@ ai_Brain.prototype = {
 			var effect = _g1[_g];
 			++_g;
 			effect.effect(this.world);
-			this.needs[effect.id].update(action.duration);
 		}
 	}
 	,update: function(dt) {
 		var _g = 0;
 		var _g1 = this.needs;
 		while(_g < _g1.length) {
-			var motive = _g1[_g];
+			var need1 = _g1[_g];
 			++_g;
-			motive.update(dt);
+			need1.update(dt);
+		}
+		var need;
+		var _g2 = this.world.agent.aiMode;
+		switch(_g2) {
+		case "highest_needs":
+			need = this.getGreatestNeed();
+			break;
+		case "true_random":
+			need = util_ArrayExtensions.randomElement(this.needs);
+			break;
+		case "weighted_random":
+			need = this.needs[0];
+			break;
+		default:
+			need = null;
+		}
+		if(need != null) {
+			var actions;
+			actions = (function($this) {
+				var $r;
+				if(!($this.world.queryContextForActions != null)) throw new js__$Boot_HaxeError("FAIL: world.queryContextForActions != null");
+				$r = $this.world.queryContextForActions(need);
+				return $r;
+			}(this));
+			this.signal_selectedAction.dispatch((function($this) {
+				var $r;
+				if(!(actions != null && actions.length != 0)) throw new js__$Boot_HaxeError("FAIL: array != null && array.length != 0");
+				$r = actions[Std.random(actions.length)];
+				return $r;
+			}(this)));
 		}
 	}
+	,getGreatestNeed: function() {
+		var idx = 0;
+		var value = 0;
+		var _g1 = 0;
+		var _g = this.needs.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(this.needs[i].value > value) {
+				value = this.needs[idx].value;
+				idx = i;
+			}
+		}
+		return this.needs[idx];
+	}
+	,getWeightedRandomNeed: function() {
+		return this.needs[0];
+	}
+	,getRandomNeed: function() {
+		return util_ArrayExtensions.randomElement(this.needs);
+	}
+	,findActions: function(need) {
+		if(!(this.world.queryContextForActions != null)) throw new js__$Boot_HaxeError("FAIL: world.queryContextForActions != null");
+		return this.world.queryContextForActions(need);
+	}
 };
-var ai_Need = function(id,initialValue,growthRate,drainModifier,growthCurve,tag) {
+var ai_Need = function(id,initialValue,growthRate,growthModifier,growthCurve,tag) {
 	if(tag == null) tag = "Unnamed Motive";
-	if(drainModifier == null) drainModifier = 1.0;
+	if(growthModifier == null) growthModifier = 1.0;
 	if(growthRate == null) growthRate = 0.01;
 	this.id = id;
 	this.set_value(initialValue);
 	this.growthRate = growthRate;
-	this.modifier = drainModifier;
+	this.growthModifier = growthModifier;
 	this.tag = tag;
 	if(growthCurve != null) this.growthCurve = growthCurve; else this.growthCurve = $bind(this,this.linear);
 };
@@ -420,7 +628,7 @@ ai_Need.__name__ = true;
 ai_Need.prototype = {
 	update: function(dt) {
 		var _g = this;
-		_g.set_value(_g.value + this.growthCurve(dt * this.growthRate * this.modifier));
+		_g.set_value(_g.value + this.growthCurve(dt * this.growthRate * this.growthModifier));
 	}
 	,set_value: function(v) {
 		return v < 0?this.value = 0:v > 1?this.value = 1:this.value = v;
@@ -558,6 +766,279 @@ js_Boot.__string_rec = function(o,s) {
 };
 var js_d3__$D3_InitPriority = function() { };
 js_d3__$D3_InitPriority.__name__ = true;
+var msignal_Signal = function(valueClasses) {
+	if(valueClasses == null) valueClasses = [];
+	this.valueClasses = valueClasses;
+	this.slots = msignal_SlotList.NIL;
+	this.priorityBased = false;
+};
+msignal_Signal.__name__ = true;
+msignal_Signal.prototype = {
+	add: function(listener) {
+		return this.registerListener(listener);
+	}
+	,addOnce: function(listener) {
+		return this.registerListener(listener,true);
+	}
+	,addWithPriority: function(listener,priority) {
+		if(priority == null) priority = 0;
+		return this.registerListener(listener,false,priority);
+	}
+	,addOnceWithPriority: function(listener,priority) {
+		if(priority == null) priority = 0;
+		return this.registerListener(listener,true,priority);
+	}
+	,remove: function(listener) {
+		var slot = this.slots.find(listener);
+		if(slot == null) return null;
+		this.slots = this.slots.filterNot(listener);
+		return slot;
+	}
+	,removeAll: function() {
+		this.slots = msignal_SlotList.NIL;
+	}
+	,registerListener: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		if(this.registrationPossible(listener,once)) {
+			var newSlot = this.createSlot(listener,once,priority);
+			if(!this.priorityBased && priority != 0) this.priorityBased = true;
+			if(!this.priorityBased && priority == 0) this.slots = this.slots.prepend(newSlot); else this.slots = this.slots.insertWithPriority(newSlot);
+			return newSlot;
+		}
+		return this.slots.find(listener);
+	}
+	,registrationPossible: function(listener,once) {
+		if(!this.slots.nonEmpty) return true;
+		var existingSlot = this.slots.find(listener);
+		if(existingSlot == null) return true;
+		if(existingSlot.once != once) throw new js__$Boot_HaxeError("You cannot addOnce() then add() the same listener without removing the relationship first.");
+		return false;
+	}
+	,createSlot: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		return null;
+	}
+	,get_numListeners: function() {
+		return this.slots.get_length();
+	}
+};
+var msignal_Signal0 = function() {
+	msignal_Signal.call(this);
+};
+msignal_Signal0.__name__ = true;
+msignal_Signal0.__super__ = msignal_Signal;
+msignal_Signal0.prototype = $extend(msignal_Signal.prototype,{
+	dispatch: function() {
+		var slotsToProcess = this.slots;
+		while(slotsToProcess.nonEmpty) {
+			slotsToProcess.head.execute();
+			slotsToProcess = slotsToProcess.tail;
+		}
+	}
+	,createSlot: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		return new msignal_Slot0(this,listener,once,priority);
+	}
+});
+var msignal_Signal1 = function(type) {
+	msignal_Signal.call(this,[type]);
+};
+msignal_Signal1.__name__ = true;
+msignal_Signal1.__super__ = msignal_Signal;
+msignal_Signal1.prototype = $extend(msignal_Signal.prototype,{
+	dispatch: function(value) {
+		var slotsToProcess = this.slots;
+		while(slotsToProcess.nonEmpty) {
+			slotsToProcess.head.execute(value);
+			slotsToProcess = slotsToProcess.tail;
+		}
+	}
+	,createSlot: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		return new msignal_Slot1(this,listener,once,priority);
+	}
+});
+var msignal_Signal2 = function(type1,type2) {
+	msignal_Signal.call(this,[type1,type2]);
+};
+msignal_Signal2.__name__ = true;
+msignal_Signal2.__super__ = msignal_Signal;
+msignal_Signal2.prototype = $extend(msignal_Signal.prototype,{
+	dispatch: function(value1,value2) {
+		var slotsToProcess = this.slots;
+		while(slotsToProcess.nonEmpty) {
+			slotsToProcess.head.execute(value1,value2);
+			slotsToProcess = slotsToProcess.tail;
+		}
+	}
+	,createSlot: function(listener,once,priority) {
+		if(priority == null) priority = 0;
+		if(once == null) once = false;
+		return new msignal_Slot2(this,listener,once,priority);
+	}
+});
+var msignal_Slot = function(signal,listener,once,priority) {
+	if(priority == null) priority = 0;
+	if(once == null) once = false;
+	this.signal = signal;
+	this.set_listener(listener);
+	this.once = once;
+	this.priority = priority;
+	this.enabled = true;
+};
+msignal_Slot.__name__ = true;
+msignal_Slot.prototype = {
+	remove: function() {
+		this.signal.remove(this.listener);
+	}
+	,set_listener: function(value) {
+		if(value == null) throw new js__$Boot_HaxeError("listener cannot be null");
+		return this.listener = value;
+	}
+};
+var msignal_Slot0 = function(signal,listener,once,priority) {
+	if(priority == null) priority = 0;
+	if(once == null) once = false;
+	msignal_Slot.call(this,signal,listener,once,priority);
+};
+msignal_Slot0.__name__ = true;
+msignal_Slot0.__super__ = msignal_Slot;
+msignal_Slot0.prototype = $extend(msignal_Slot.prototype,{
+	execute: function() {
+		if(!this.enabled) return;
+		if(this.once) this.remove();
+		this.listener();
+	}
+});
+var msignal_Slot1 = function(signal,listener,once,priority) {
+	if(priority == null) priority = 0;
+	if(once == null) once = false;
+	msignal_Slot.call(this,signal,listener,once,priority);
+};
+msignal_Slot1.__name__ = true;
+msignal_Slot1.__super__ = msignal_Slot;
+msignal_Slot1.prototype = $extend(msignal_Slot.prototype,{
+	execute: function(value1) {
+		if(!this.enabled) return;
+		if(this.once) this.remove();
+		if(this.param != null) value1 = this.param;
+		this.listener(value1);
+	}
+});
+var msignal_Slot2 = function(signal,listener,once,priority) {
+	if(priority == null) priority = 0;
+	if(once == null) once = false;
+	msignal_Slot.call(this,signal,listener,once,priority);
+};
+msignal_Slot2.__name__ = true;
+msignal_Slot2.__super__ = msignal_Slot;
+msignal_Slot2.prototype = $extend(msignal_Slot.prototype,{
+	execute: function(value1,value2) {
+		if(!this.enabled) return;
+		if(this.once) this.remove();
+		if(this.param1 != null) value1 = this.param1;
+		if(this.param2 != null) value2 = this.param2;
+		this.listener(value1,value2);
+	}
+});
+var msignal_SlotList = function(head,tail) {
+	this.nonEmpty = false;
+	if(head == null && tail == null) {
+		if(msignal_SlotList.NIL != null) throw new js__$Boot_HaxeError("Parameters head and tail are null. Use the NIL element instead.");
+		this.nonEmpty = false;
+	} else if(head == null) throw new js__$Boot_HaxeError("Parameter head cannot be null."); else {
+		this.head = head;
+		if(tail == null) this.tail = msignal_SlotList.NIL; else this.tail = tail;
+		this.nonEmpty = true;
+	}
+};
+msignal_SlotList.__name__ = true;
+msignal_SlotList.prototype = {
+	get_length: function() {
+		if(!this.nonEmpty) return 0;
+		if(this.tail == msignal_SlotList.NIL) return 1;
+		var result = 0;
+		var p = this;
+		while(p.nonEmpty) {
+			++result;
+			p = p.tail;
+		}
+		return result;
+	}
+	,prepend: function(slot) {
+		return new msignal_SlotList(slot,this);
+	}
+	,append: function(slot) {
+		if(slot == null) return this;
+		if(!this.nonEmpty) return new msignal_SlotList(slot);
+		if(this.tail == msignal_SlotList.NIL) return new msignal_SlotList(slot).prepend(this.head);
+		var wholeClone = new msignal_SlotList(this.head);
+		var subClone = wholeClone;
+		var current = this.tail;
+		while(current.nonEmpty) {
+			subClone = subClone.tail = new msignal_SlotList(current.head);
+			current = current.tail;
+		}
+		subClone.tail = new msignal_SlotList(slot);
+		return wholeClone;
+	}
+	,insertWithPriority: function(slot) {
+		if(!this.nonEmpty) return new msignal_SlotList(slot);
+		var priority = slot.priority;
+		if(priority >= this.head.priority) return this.prepend(slot);
+		var wholeClone = new msignal_SlotList(this.head);
+		var subClone = wholeClone;
+		var current = this.tail;
+		while(current.nonEmpty) {
+			if(priority > current.head.priority) {
+				subClone.tail = current.prepend(slot);
+				return wholeClone;
+			}
+			subClone = subClone.tail = new msignal_SlotList(current.head);
+			current = current.tail;
+		}
+		subClone.tail = new msignal_SlotList(slot);
+		return wholeClone;
+	}
+	,filterNot: function(listener) {
+		if(!this.nonEmpty || listener == null) return this;
+		if(Reflect.compareMethods(this.head.listener,listener)) return this.tail;
+		var wholeClone = new msignal_SlotList(this.head);
+		var subClone = wholeClone;
+		var current = this.tail;
+		while(current.nonEmpty) {
+			if(Reflect.compareMethods(current.head.listener,listener)) {
+				subClone.tail = current.tail;
+				return wholeClone;
+			}
+			subClone = subClone.tail = new msignal_SlotList(current.head);
+			current = current.tail;
+		}
+		return this;
+	}
+	,contains: function(listener) {
+		if(!this.nonEmpty) return false;
+		var p = this;
+		while(p.nonEmpty) {
+			if(Reflect.compareMethods(p.head.listener,listener)) return true;
+			p = p.tail;
+		}
+		return false;
+	}
+	,find: function(listener) {
+		if(!this.nonEmpty) return null;
+		var p = this;
+		while(p.nonEmpty) {
+			if(Reflect.compareMethods(p.head.listener,listener)) return p.head;
+			p = p.tail;
+		}
+		return null;
+	}
+};
 var util_ArrayExtensions = function() { };
 util_ArrayExtensions.__name__ = true;
 util_ArrayExtensions.randomElementFromArrays = function(arrays) {
@@ -689,8 +1170,10 @@ var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 String.__name__ = true;
 Array.__name__ = true;
+msignal_SlotList.NIL = new msignal_SlotList(null,null);
 Strings.walkingAdjective = ["shuffle","waddle","dodder","shamble","lurch","stumble","reel","stagger"];
-Strings.eatingDescription = ["wolf it down","gobble it greedily","feast on it","voraciously scarf it down"];
+Strings.eatingDescription = ["wolf it down","gobble it greedily","feast on it","voraciously scarf it down","gag on it as it goes down","burp in satisfaction","choke it down","swallow it whole"];
+Strings.showeringDescription = ["You scrub up and delouse in the shower.","You do your ablutions. The mouldy shower curtain catches you on your way out.","You take a long soak in the shower and groom your nose hair."];
 Strings.unrecognizedCommand = ["You flail uselessly."];
 js_d3__$D3_InitPriority.important = "important";
 Main.main();

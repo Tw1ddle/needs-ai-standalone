@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width,user-scalable=yes,initial-scale=1,maximum-scale=1">
-		<title>Procedural Name Generator</title>
+		<title>Needs AI</title>
 		<meta name="author" content="Sam Twidale">
 		<link rel="icon" type="image/x-icon" href="icon/favicon.png">
 		<link rel="apple-touch-icon-precomposed" type="image/x-icon" href="icon/apple-touch-icon-precomposed.png">
@@ -19,148 +19,90 @@
     <body>
 		<section id="header">
 			<div class="inner">
-				<!-- Icon -->
-				<h1>Procedural <strong>Name Generator</strong></h1>
-				<h2>Generate original names with Markov chains</h2>
+				<h1>Needs AI</h1>
+				<h2>Survive for 24 hours.</h2>
+
+				<p>Minature text adventure demonstrating a <a href="http://www.gamasutra.com/view/feature/131519/designing_needbased_ai_for_.php" target="_blank">need-based AI</a>. Free and <a href="https://github.com/Tw1ddle/needs-ai" target="_blank">open source</a>, written in <a href="http://haxe.org/" target="_blank">Haxe</a> by <a href="https://twitter.com/Sam_Twidale" target="_blank">Sam Twidale</a>.</p>
 				
-				<a href="https://github.com/Tw1ddle/MarkovNameGenerator" target="_blank">
-					<img class="logo" src="assets/images/markovnamegen_logo.png" alt="procedural name generation markov-namegen haxelib logo">
-				</a>
-				
-				<p><a href="https://en.wikipedia.org/wiki/Procedural_generation" target="_blank">Procedurally generates</a> names using a high order <a href="https://en.wikipedia.org/wiki/Markov_process" target="_blank">Markov process</a>. Free and <a href="https://github.com/Tw1ddle/MarkovNameGenerator" target="_blank">open source</a>, written in <a href="http://haxe.org/" target="_blank">Haxe</a> by <a href="https://twitter.com/Sam_Twidale" target="_blank">Sam Twidale</a>.</p>
+				<div id="time" class="container"></div>
 			</div>
 		</section>
 		
-		<!-- Options and filters -->		
-		<section id="accordion">
-			<div>
-				<input type="checkbox" id="check-1">
-				<h2><label for="check-1">Settings</label></h2>
-
-				<div class="settings">
-					<div class="stitched">
-						<h3>Name Dataset</h3>
-					
-						<select id="trainingdatalist">
-						  <option value="tolkienesque_forenames">Tolkienesque Forenames</option>
-						  <option value="us_forenames">American Forenames</option>
-						  <option value="werewolf_forenames">Werewolf Forenames</option>
-						  <option value="romandeity_forenames">Roman Deity Forenames</option>
-						  <option value="norsedeity_forenames">Norse Deity Forenames</option>
-						  <option value="swedish_forenames">Swedish Forenames</option>
-						  <option value="english_towns">English Towns</option>
-						  <option value="theological_demons">Theological Demons</option>
-						  <option value="irish_forenames">Irish Forenames</option>
-						  <option value="scottish_surnames">Scottish Surnames</option>
-						  <option value="icelandic_forenames">Icelandic Forenames</option>
-						  <option value="theological_angels">Theological Angels</option>
-						  <option value="japanese_forenames">Japanese Forenames</option>
-						  <option value="french_forenames">French Forenames</option>
-						  <option value="german_towns">German Towns</option>
-						  <option value="animals" selected="selected">Animals</option>
-						  <option value="fish">Fish</option>
-						  <option value="plantscommon">Plants (Common Names)</option>
-						  <option value="pokemon">Pokémon</option>
-						</select>
-					</div>
-					
-					<div class="sliders">
-						<div class="stitched">
-							<div class="container">
-								<h3>Length Range</h3>
-								<div id="minmaxlength" class="black"></div>
-							</div>
-							<div class="container">
-								<h3>Order</h3>
-								<div id="order" class="red"></div>
-							</div>
-							
-							<div class="container">
-								<h3>Prior</h3>
-								<div id="prior" class="green"></div>
-							</div>
-							<div class="container">
-								<h3>Max Processing Time</h3>
-								<div id="maxtime" class="blue"></div>
-							</div>
-						</div>
-					</div>
-					
-					<div class="textboxes stitched">
-						<div class="container"> <h3>Starts With</h3> <input type="text" id="startswith" class="control"> </div>
-						<div class="container"> <h3>Ends With</h3> <input type="text" id="endswith" class="control"> </div>
-						<div class="container"> <h3>Includes</h3> <input type="text" id="includes" class="control"> </div>
-						<div class="container"> <h3>Excludes</h3> <input type="text" id="excludes" class="control"> </div>
-						<div class="container"> <h3>Similar To</h3> <input type="text" id="similar" class="control"> </div>
-					</div>
-					
-					<!--
-					<div class="triegraphsettings stitched">
-						<div class="container">
-							<h3>Draw Trie</h3>
-							<div id="generatetriegraph" class="orange verticalslider"></div>
-						</div>
-					</div>
-					-->
-					
-					<!--
-					<div class="markovgraphsettings stitched">
-						<div class="container">
-							<h3>Draw Markov</h3>
-							<div id="generatemarkovgraph" class="orange verticalslider"></div>
-						</div>
-						<div class="container">
-							<h3>Min P</h3>
-							<div id="markovp" class="orange"></div>
-						</div>
-					</div>
-					-->
-					
+		<section id="game" class="container">
+			<div id="map">
+			</div>
+			
+			<div id="status">
+			</div>
+		
+			<div id="console">
+			</div>
+			
+			<div id="actions" class="stitched">
+			</div>
+			
+			<div id="needs">
+			</div>
+		</section>
+		
+		<div id="graphs_container" class="stitched">
+			<h2>Needs</h2>
+			<div id="graphs" class="container"></div>
+		</div>
+		
+		<div id="settings" class="stitched">
+			<h2>Settings</h2>
+			<div class="container">
+				<h3>Updates Per Second</h3>
+				<div class="container">
+					<div id="clockspeed" class="red"></div>
 				</div>
 			</div>
-		</section>
-		
-		<a class="button" id="generate">
-			<h2>Generate</h2>
-		</a>
-		
-		<br>
-		
-		<!--
-		<div class="stitched">
-			<div id="markovgraph"></div>
-			<div id="triegraph"></div>
+			<div class="container">
+				<h3>Strategy</h3>
+				<div class="container">
+					<select id="strategy">
+						<option value="highest_needs" selected="selected">Highest Needs First</option>
+						<option value="true_random">True Random</option>
+						<option value="weighted_random">Weighted Random</option>
+						<option value="disabled">Disabled</option>
+					</select>
+				</div>
+			</div>
 		</div>
-		-->
 		
-		<section id="two" class="main style2">
-			<div class="container stitched">
-				<h2>Names</h2>
-				<br>
-			
-				<p id="nonamesfound">Press "Settings" to customize and "Generate" to begin.</p>
-				<ul style="list-style: none" id="currentnames">
-				</ul>
-			</div>
-		</section>
-		
-		<section id="three" class="main style3">
-			<div class="container stitched">
-				<h2>How It Works</h2>
-				<p>This site uses  <a href="https://en.wikipedia.org/wiki/Markov_chain" target="_blank">Markov chains</a> to <a href="https://en.wikipedia.org/wiki/Procedural_generation" target="_blank">procedurally generate</a> original and "random" words and names. Given a set of words as training data, the generator calculates the conditional probability of a letter appearing after the sequence of letters chosen so far.</p>
-				<p>The generator maintains an array of models that look up to "n" characters back, where "n" is the order of the highest order model specified in the settings. It starts with the highest order model, and falls back to lower order models using an approach called <a href="https://en.wikipedia.org/wiki/Katz%27s_back-off_model" target="_blank">Katz's back-off model</a>. If you increase the order setting, you can expect to see larger chunks of familiar words appearing in the generated output.</p>
-				<p>A <a href="https://en.wikipedia.org/wiki/Prior_probability" target="_blank">Dirichlet prior</a> is used to add a constant probability that any letter may be picked as the next letter. It acts like an additive smoothing factor, making the generated names look a bit more "random". In most cases it is best to keep this low, but it can be useful to increase this if you aren't seeing many results.</p>
-				<p>The generator generates as many words as possible before filtering and sorting them according to the tweakable criteria in the settings section. The length range limits how many characters long the words are. The start, end, includes and excludes options limit the acceptable content of the word.</p>
-				<p>The similarity field allows you to sort the generated names by their similarity to the name that you enter. The similarity of the words is determined by the <a href="https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance" target="_blank">Damerau-Levenshtein</a> distance.</p>
-				<p>This generator is suitable for generating all sorts of names - be they funny names, fantasy names, Scottish names, German names, Irish names, names of towns, animal names, theological names, werewolf names, all kinds of names.</p>
-				<p>If you have any suggestions, requests or comments then feel free to <a href="http://samcodes.co.uk/contact/" target="_blank">contact me</a>.</p>
-			</div>
-		</section>
+		<div class="stitched">
+			<h2>How It Works</h2>
+			<p>This demonstrates a need-based AI that simulates someone sitting at their computer all day. The <a href="https://github.com/Tw1ddle/needs-ai" target="_blank">open source code</a> could be a starting point for AI for a roguelike, text adventure or <a href="http://intrinsicalgorithm.com/IAonAI/2009/10/aiide-2009-ai-challenges-in-sims-3-richard-evans/" target="_blank">Sims-style game</a>.</p>
+			<p>The AI is modelled as a set of needs and a strategy to meet them. There are four strategies: always choose actions to satisfy the most urgent need, random selection weighted towards more urgent needs, true random selection, and nothing (purely manual control).</p>
+			<p>Threshold values are used to make the agent repeat actions to satisfy a need, when a single action might not be sufficient. Modifiers are used to change the effectiveness of needs or actions, to model traits or personality differences.</p>
+			<p>This was inspired by text adventures like <a href="http://www.bay12games.com/lcs/" target="_blank">Liberal Crime Squad</a> and <a href="http://www.mobygames.com/game/dos/oubliette" target="_blank">Oubliette</a>, but went on a tangent.</p>
+			<p>If you have any suggestions, requests or comments then feel free to <a href="http://samcodes.co.uk/contact/" target="_blank">contact me</a>.</p>
+		</div>
 		
 		<!-- <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js' charset='utf-8'></script> -->
 		<script type="text/javascript" src="js/jquery.min.js"></script>
 		<script type="text/javascript" src="js/jquery.mousewheel.min.js"></script>
 		<script type="text/javascript" src="js/jquery.terminal.min.js"></script>
+		<script>
+			terminal = $('#console').terminal(function(command, term) {
+				term.echo('');
+			}, {
+				greetings: false,
+				name: 'dconsole',
+				width: "100%",
+				height: "400",
+				prompt: '> ',
+			});
+
+			document.addEventListener('console_log', function(evt) {
+				terminal.echo(evt.detail.data, {
+					finalize: function(div) {
+						div.css("color", "#" + evt.detail.color);
+					}
+				});
+			});
+		</script>
 		<script type="text/javascript" src="js/wNumb.min.js"></script>
 		<script type="text/javascript" src="js/nouislider.min.js"></script>
 		<script type="text/javascript" src="js/flipclock.min.js"></script>
