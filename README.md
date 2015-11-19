@@ -11,8 +11,6 @@ Try it out [in the browser](http://www.samcodes.co.uk/project/needs-ai/).
 ## Screenshots ##
 Here is the AI in action:
 
-![Screenshot](https://github.com/Tw1ddle/needs-ai/blob/master/screenshots/screenshot0.png?raw=true "Need-based AI screenshot 1")
-
 ![Screenshot](https://github.com/Tw1ddle/needs-ai/blob/master/screenshots/screenshot1.png?raw=true "Need-based AI screenshot 2")
 
 ## How It Works ##

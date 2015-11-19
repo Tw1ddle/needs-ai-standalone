@@ -133,7 +133,7 @@ var Fridge = function(world) {
 		_g22.set_value(_g22.value - 0.2);
 		var _g23 = brain10.needs[4];
 		_g23.set_value(_g23.value + 0.1);
-	}},{ name : "broccoli cassrole", descriptions : ["Several weeks old"], effects : function(brain11) {
+	}},{ name : "broccoli casserole", descriptions : ["Several weeks old"], effects : function(brain11) {
 		var _g24 = brain11.needs[2];
 		_g24.set_value(_g24.value - 0.4);
 		var _g25 = brain11.needs[4];

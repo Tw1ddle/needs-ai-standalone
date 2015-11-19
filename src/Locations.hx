@@ -102,7 +102,7 @@ class Fridge extends Location {
 			{ name: "raw chicken", descriptions: ["It has a slightly green tinge"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.2; brain.needs[NeedId.BLADDER].value += 0.1; } },
 			{ name: "bowl of steamed rice", descriptions: ["It was left in the rice cooker for a few weeks"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.5; brain.needs[NeedId.BLADDER].value += 0.1; } },
 			{ name: "pound of ground beef", descriptions: ["Looks as if a small animal has been gnawing on it"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.2; brain.needs[NeedId.BLADDER].value += 0.1; } },
-			{ name: "broccoli cassrole", descriptions: ["Several weeks old"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.4; brain.needs[NeedId.BLADDER].value += 0.1; } },
+			{ name: "broccoli casserole", descriptions: ["Several weeks old"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.4; brain.needs[NeedId.BLADDER].value += 0.1; } },
 			{ name: "dish of burnt refried beans", descriptions: ["They have a smoky carbonized aroma"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.3; brain.needs[NeedId.BLADDER].value += 0.1; } },
 			{ name: "pint-glass of rancid milk", descriptions: ["There's something swimming in it"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.3; brain.needs[NeedId.BLADDER].value += 0.1; } }
 		];
