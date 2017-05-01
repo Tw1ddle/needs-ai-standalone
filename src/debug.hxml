@@ -1,6 +1,3 @@
 -debug
 
--lib sure
--lib msignal
-
 -js ../bin/debug/js/game.js
