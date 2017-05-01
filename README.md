@@ -1,9 +1,10 @@
 [![Project logo](https://github.com/Tw1ddle/needs-ai/blob/master/screenshots/logo.png?raw=true "Need-based AI project logo")](https://github.com/Tw1ddle/needs-ai/)
+
 [![Travis Build Status](https://img.shields.io/travis/Tw1ddle/needs-ai.svg?style=flat-square)](https://travis-ci.org/Tw1ddle/needs-ai)
 
 WORK IN PROGRESS
 
-Need-based artificial intelligence written in Haxe. Need-based AI is useful for games where semi-autonomous agents have to satisfy several competing needs, like in games such as The Sims. 
+Need-based artificial intelligence written in Haxe. Need-based AI is useful for games where semi-autonomous agents have to satisfy several competing needs, like in games such as The Sims.
 
 Try it out [in the browser](http://www.samcodes.co.uk/project/needs-ai/).
 
