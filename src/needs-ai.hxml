@@ -1,9 +1,7 @@
 -cp lib/needs-ai-lib
+#-lib needs-ai
 
--lib sure
 -lib msignal
-
---no-traces
 
 -js ../bin/js/game.js
 

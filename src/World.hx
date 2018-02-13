@@ -8,32 +8,7 @@ import js.Browser;
 import js.flipclock.FlipClock;
 import Locations;
 import Ids;
-
-@:enum abstract Strategy(String) from String to String {
-	var HIGHEST_NEEDS = "highest_needs";
-	var TRUE_RANDOM = "true_random";
-	var WEIGHTED_RANDOM = "weighted_random";
-	var DISABLED = "disabled";
-}
-
-// Models an agent, a brain and a means of performing actions
-class Agent {
-	public var brain(default, null):Brain;
-	public var aiMode:Strategy;
-	
-	public function new(brain:Brain) {
-		this.brain = brain;
-		this.aiMode = Strategy.HIGHEST_NEEDS;
-	}
-	
-	public function act(action:Action):Void {
-		brain.act(action);
-	}
-	
-	public function update(dt:Float):Void {
-		brain.update(dt);
-	}
-}
+import needs.ai.Agent;
 
 // The game world
 class World {
@@ -77,16 +52,6 @@ class World {
 	}
 	
 	/*
-	 * Sets the onscreen clock to reflect the number of game minutes passed
-	 */
-	public function set_minutes(min:Float):Float {
-		if(clock != null) {
-			clock.setTime(min * 60);
-		}
-		return this.minutes = min;
-	}
-	
-	/*
 	 * Gets an array of all the actions available to an agent within its current context
 	 */
 	public function queryContextForActions(need:Need):Array<Action> {
@@ -103,5 +68,15 @@ class World {
 			}
 		}
 		return actions;
+	}
+	
+	/*
+	 * Sets the onscreen clock to reflect the number of game minutes passed
+	 */
+	public function set_minutes(min:Float):Float {
+		if(clock != null) {
+			clock.setTime(min * 60);
+		}
+		return this.minutes = min;
 	}
 }

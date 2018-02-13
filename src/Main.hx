@@ -12,8 +12,7 @@ import js.html.Element;
 import js.html.SelectElement;
 import msignal.Signal;
 
-using util.ArrayExtensions;
-using util.StringExtensions;
+using needs.util.ArrayExtensions;
 
 class Main {
 	private var world:World;
@@ -49,7 +48,7 @@ class Main {
 		
 		signal_actionButtonPressed.add(handleAction);
 		signal_consoleActionIssued.add(handleAction);
-		world.agent.brain.signal_selectedAction.add(handleAction);
+		world.agent.brain.onActionSelected = handleAction;
 	}
 	
 	/*
@@ -100,7 +99,7 @@ class Main {
 				for (action in location.actions) {
 					var containsParts:Bool = true;
 					for (part in action.trigger) {
-						if (!command.contains(part)) {
+						if (!(command.indexOf(part) > 0)) {
 							containsParts = false;
 							break;
 						}
@@ -229,15 +228,5 @@ class Main {
 		}
 		updateHandle = Browser.window.setInterval(update, time);
 		return time;
-	}
-}
-
-// Extended action class that takes a set of trigger words that the game uses to decide whether a player command triggers an action
-class TriggerAction extends Action {
-	public var trigger(default, null):Array<String>;
-	
-	public function new(id:Int, trigger:Array<String>, duration:Float, effects:Array<Effect>) {
-		super(id, duration, effects);
-		this.trigger = trigger;
 	}
 }

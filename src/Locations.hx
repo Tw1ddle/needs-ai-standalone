@@ -5,7 +5,7 @@ import needs.ai.Brain;
 import js.jquery.terminal.Terminal;
 import Ids;
 
-using util.ArrayExtensions;
+using needs.util.ArrayExtensions;
 
 class Strings {
 	public static var walkingAdjective = [
