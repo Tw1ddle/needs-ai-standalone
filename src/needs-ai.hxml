@@ -1,3 +1,5 @@
+-cp lib/needs-ai-lib
+
 -lib sure
 -lib msignal
 
