@@ -7,7 +7,8 @@ import haxe.ds.GenericStack;
 import js.Browser;
 import js.flipclock.FlipClock;
 import Locations;
-import Ids;
+import ActionId;
+import NeedId;
 import needs.ai.Agent;
 
 // The game world

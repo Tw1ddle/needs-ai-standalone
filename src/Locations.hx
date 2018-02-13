@@ -3,7 +3,8 @@ package;
 import Main;
 import needs.ai.Brain;
 import js.jquery.terminal.Terminal;
-import Ids;
+import ActionId;
+import NeedId;
 
 using needs.util.ArrayExtensions;
 
