@@ -1,6 +1,6 @@
 package;
 
-import ai.Action;
+import needs.ai.Action;
 import haxe.ds.IntMap;
 import js.Browser;
 import js.jquery.terminal.Terminal;
@@ -60,7 +60,7 @@ class Main {
 			world.minutes += 1;
 			world.update(1);
 			
-			for (graph in graphs) {				
+			for (graph in graphs) {
 				for (motive in world.agent.brain.needs) {
 					var graph:NeedGraph = graphs.get(motive.id);
 					graph.addData( { time: world.minutes, value: motive.value }, world.minutes );
@@ -114,7 +114,7 @@ class Main {
 			
 			if (!recognizedCommand && command.length != 0) {
 				Terminal.echo(Strings.unrecognizedCommand.randomElement());
-			}			
+			}
 		}, {
 			greetings: false,
 			name: '>'

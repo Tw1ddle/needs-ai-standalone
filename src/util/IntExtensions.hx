@@ -1,7 +1,7 @@
 package util;
 
 // Extension methods for ints
-class IntExtensions {	
+class IntExtensions {
 	inline public static function abs(v:Int):Int {
 		if (v < 0) {
 			return -v;
@@ -50,7 +50,7 @@ class IntExtensions {
 	}
 	
 	inline public static function isPow2(v:Int):Bool {
-		return (v > 0) && ((v & (v - 1)) == 0); 
+		return (v > 0) && ((v & (v - 1)) == 0);
 	}
 	
 	inline public static function sign(x:Float):Int {

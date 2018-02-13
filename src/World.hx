@@ -1,8 +1,8 @@
 package;
 
-import ai.Action;
-import ai.Brain;
-import ai.Need;
+import needs.ai.Action;
+import needs.ai.Brain;
+import needs.ai.Need;
 import haxe.ds.GenericStack;
 import js.Browser;
 import js.flipclock.FlipClock;

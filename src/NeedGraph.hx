@@ -1,6 +1,6 @@
 package;
 
-import ai.Need;
+import needs.ai.Need;
 import js.d3.D3;
 import js.d3.scale.Scale.Linear;
 import js.d3.selection.Selection;
@@ -15,7 +15,7 @@ typedef TimeData = {
 }
 
 // A d3.js graph of a need changing over time
-class NeedGraph {	
+class NeedGraph {
 	private var data:Array<TimeData>; // The data being graphed
 	private var title:String; // Graph title
 	private var width:Int; // Width not counting margins

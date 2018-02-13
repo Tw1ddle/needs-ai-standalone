@@ -1,7 +1,7 @@
 package;
 
 import Main;
-import ai.Brain;
+import needs.ai.Brain;
 import js.jquery.terminal.Terminal;
 import Ids;
 
@@ -36,7 +36,7 @@ class Strings {
 	"You take a long soak in the shower and groom your nose hair."
 	];
 	
-	public static var unrecognizedCommand:Array<String> = [ 
+	public static var unrecognizedCommand:Array<String> = [
 	"You flail uselessly."
 	];
 }
@@ -90,7 +90,7 @@ class Fridge extends Location {
 	public inline function new(world:World) {
 		super("Fridge", "The new fridge");
 		
-		foods = [ 
+		foods = [
 			{ name: "tin of beans", descriptions: ["It says best before June 2012"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.2; brain.needs[NeedId.BLADDER].value += 0.1; brain.needs[NeedId.HYGIENE].value -= 0.05; } },
 			{ name: "pack of stale biscuits", descriptions: ["They look like they've been open for months"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.1; brain.needs[NeedId.BLADDER].value += 0.03; } },
 			{ name: "baked potato with green fur", descriptions: ["A rancid smell emanates from it"], effects: function(brain:Brain):Void { brain.needs[NeedId.HUNGER].value -= 0.3; brain.needs[NeedId.BLADDER].value += 0.1; } },

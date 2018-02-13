@@ -1,4 +1,8 @@
 -lib sure
 -lib msignal
 
+--no-traces
+
+-js ../bin/js/game.js
+
 -main Main
