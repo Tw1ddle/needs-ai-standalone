@@ -3,19 +3,33 @@ dist: trusty
 
 language: haxe
 
+# Add encrypted API key
+env:
+  global:
+    - secure: JNb9fBPt6vmp1rWSVmhAjttib0VT+c37EqW7m+gdPyc2mKxkL/epKsWxePfrrBs68y/Lgu65eOf/lMlKU4rDTDKyjZK5hJgt3w6Ropa1Dit9f08fEfDtIOzK4XUXYTEIhQMoHjHqQYOduCyQZVpimmMLj7Mu9WrLXSV7Orf/kajrQOxefXZh7GFVRTxc7a7S6K1ekwsAJwyjBtmOeAWhWoMEdL7SipcnmwmWCLwOzEJQ8TkW+oxqzmn6PwaowNCqAsc1OD5OJDfhVETMe3vzsz7wfsb8/LRre36WU4J+o+WWs2d+rxyadt624j4ZUT4GFVakdvsd6UuGZkn81aUhRsmofmgFRMuKwJHuvkQS+YZNikIkkG1CIgap4vbZbxJwiUia6i71Ir881YRyeNegEH9Z5cBJ+OcuUjg2gXnqAGxjgBQs5tABSQU06pXQf6tC1Obbky4Ptm2I8VlN+XnTeS7AaaB8nMQiqHt9oHxkIu3DvJvI8+LvIT24UdewehXG+bHl3UIrmIzas0NZlz5qHxMtxcJzw1FsGuhDkNLYVjWgLT9SsNERXxV2rP0v+lAgKobWwVWtbI2ck3jrjUQLf4OFpUT/lSnfrUrDKNx8SWjvb5K76dOWmZwrKbWG+5GmkRpSlSyN9PPOENTFwKUQbf1wjq8ZuCL6NW2I60Oh0jw=
 os:
   - linux
 
-# see haxe versions: http://haxe.org/website-content/downloads/versions.json
-haxe:
-  - "3.4.2"
+# Blacklist
+branches:
+  only:
+    - master
 
+# Install dependencies
 install:
   - haxelib install msignal
-  - haxelib install Sure
 
+# Build the demo
 script:
   - pushd src
-  - haxe NeedsAI.hxml debug.hxml
-  - haxe NeedsAI.hxml release.hxml
+  - haxe needs-ai.hxml
   - popd
+
+# Deploy the generated demo using Travis builtin GitHub Pages support
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: bin
+  github_token: $GITHUB_API_KEY
+  on:
+    branch: master
