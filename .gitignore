@@ -8,3 +8,4 @@
 **/.directory
 *.hash
 *.map
+bin/js/game.js
