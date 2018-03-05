@@ -1,7 +1,7 @@
-[![Project logo](https://github.com/Tw1ddle/needs-ai/blob/master/screenshots/logo.png?raw=true "Need-based AI project logo")](https://github.com/Tw1ddle/needs-ai/)
+[![Project logo](https://github.com/Tw1ddle/needs-ai-standalone/blob/master/screenshots/logo.png?raw=true "Need-based AI project logo")](https://github.com/Tw1ddle/needs-ai-standalone/)
 
-[![Travis Build Status](https://img.shields.io/travis/Tw1ddle/needs-ai.svg?style=flat-square)](https://travis-ci.org/Tw1ddle/needs-ai)
-[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](https://github.com/Tw1ddle/needs-ai/blob/master/LICENSE)
+[![Travis Build Status](https://img.shields.io/travis/Tw1ddle/needs-ai-standalone.svg?style=flat-square)](https://travis-ci.org/Tw1ddle/needs-ai-standalone)
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](https://github.com/Tw1ddle/needs-ai-standalone/blob/master/LICENSE)
 
 Basic standalone utility-based AI [demo](http://tw1ddle.github.io/needs-ai-standalone/index.html) written in Haxe. Survive by managing your needs, or let the AI do the work for you.
 
