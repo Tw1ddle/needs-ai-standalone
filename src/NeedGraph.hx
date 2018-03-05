@@ -1,11 +1,12 @@
 package;
 
-import needs.ai.Need;
 import js.d3.D3;
 import js.d3.scale.Scale.Linear;
 import js.d3.selection.Selection;
 import js.d3.svg.SVG.Axis;
 import js.d3.svg.SVG.Line;
+
+import Needs.Need;
 
 using StringTools;
 

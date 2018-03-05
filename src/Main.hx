@@ -1,6 +1,5 @@
 package;
 
-import needs.ai.Action;
 import haxe.ds.IntMap;
 import js.Browser;
 import js.jquery.terminal.Terminal;
@@ -10,9 +9,10 @@ import js.nouislider.NoUiSlider;
 import js.wNumb.WNumb;
 import js.html.Element;
 import js.html.SelectElement;
-import msignal.Signal;
 
-using needs.util.ArrayExtensions;
+import msignal.Signal.Signal1;
+
+using Needs.ArrayExtensions;
 
 class Main {
 	private var world:World;
@@ -77,7 +77,7 @@ class Main {
 	/*
 	 * Helper method for execution a resolved player action
 	 */
-	private inline function handleAction(action:Action):Void {
+	private inline function handleAction(action:Needs):Void {
 		if(!world.gameover) {
 			world.agent.act(action);
 			world.minutes += action.duration;

@@ -1,15 +1,14 @@
 package;
 
-import needs.ai.Action;
-import needs.ai.Brain;
-import needs.ai.Need;
 import haxe.ds.GenericStack;
 import js.Browser;
 import js.flipclock.FlipClock;
 import Locations;
 import ActionId;
 import NeedId;
-import needs.ai.Agent;
+import Needs.Agent;
+import Needs.Need;
+import Needs.Brain;
 
 // The game world
 class World {
@@ -55,8 +54,8 @@ class World {
 	/*
 	 * Gets an array of all the actions available to an agent within its current context
 	 */
-	public function queryContextForActions(need:Need):Array<Action> {
-		var actions = new Array<Action>();
+	public function queryContextForActions(need:Need):Array<Needs> {
+		var actions = new Array<Needs>();
 		for (location in context) {
 			for (action in location.actions) {
 				var addedAction:Bool = false;

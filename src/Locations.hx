@@ -1,12 +1,12 @@
 package;
 
 import Main;
-import needs.ai.Brain;
 import js.jquery.terminal.Terminal;
 import ActionId;
 import NeedId;
+import Needs.Brain;
 
-using needs.util.ArrayExtensions;
+using Needs.ArrayExtensions;
 
 class Strings {
 	public static var walkingAdjective = [
